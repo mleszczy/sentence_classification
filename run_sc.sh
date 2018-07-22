@@ -27,7 +27,7 @@ case "$TASK" in
 esac
 
 case "$MODEL" in 
-    lstm|cnn)
+    lstm|cnn|la)
         echo "Testing model ${MODEL}"
         ;;
     *)
