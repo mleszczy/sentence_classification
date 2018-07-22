@@ -42,30 +42,25 @@ class Model(nn.Module):
                 dropout = args.dropout,
             )
             d_out = args.d
-#         else:
-#             self.encoder = MF.SRU(
-#                 emb_layer.n_d,
-#                 args.d,
-#                 args.depth,
-#                 dropout = args.dropout,
-#                 use_tanh = 1,
-#             )
-#             d_out = args.d
+        elif args.la:
+            d_out = emb_layer.n_d
         self.out = nn.Linear(d_out, nclasses)
 
     def forward(self, input):
         if self.args.cnn:
             input = input.t()
         emb = self.emb_layer(input)
-        emb = self.drop(emb)
-
+        if not self.args.la:
+            emb = self.drop(emb)
         if self.args.cnn:
             output = self.encoder(emb)
-        else:
+        elif self.args.lstm:
             output, hidden = self.encoder(emb)
             output = output[-1]
-
-        output = self.drop(output)
+        else:
+            output = emb.sum(dim=0) / emb.size()[0]
+        if not self.args.la:
+            output = self.drop(output)
         return self.out(output)
 
 def eval_model(niter, model, valid_x, valid_y):
@@ -218,6 +213,7 @@ if __name__ == "__main__":
     argparser = argparse.ArgumentParser(sys.argv[0], conflict_handler='resolve')
     argparser.add_argument("--cnn", action='store_true', help="whether to use cnn")
     argparser.add_argument("--lstm", action='store_true', help="whether to use lstm")
+    argparser.add_argument("--la", action='store_true', help="whether to use la")
     argparser.add_argument("--dataset", type=str, default="mr", help="which dataset")
     argparser.add_argument("--path", type=str, required=True, help="path to corpus directory")
     argparser.add_argument("--embedding", type=str, required=True, help="word vectors")
