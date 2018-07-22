@@ -62,8 +62,8 @@ then
     do
         for CV in 0 1 2 3 4 5 6 7 8 9;
         do
-            echo "$ python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log"
-            python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log
+            echo "$ python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path ${MODELDIR}/sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log"
+            python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path ${MODELDIR}/sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log
         done
     done
 else
@@ -71,8 +71,8 @@ else
     do
         for SEED in 1234 1235 1236 1237 1238;
         do
-            echo "$ python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log"
-            python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log
+            echo "$ python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path ${MODELDIR}/sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log"
+            python ${MODELDIR}/train_classifier.py --dataset ${TASK} --path ${MODELDIR}/sent-conv-torch/data/ --embedding ${MODELDIR}/vocab/${TAG}_${emb_file}_${TASK}.pkl --cv ${CV} --${MODEL} --dropout ${DROPOUT} --seed ${SEED} > ${RESFOLDER}/${TASK}_${TAG}_${emb_file}_cv_${CV}_model_${MODEL}_dropout_${DROPOUT}_seed_${SEED}.log
         done
     done
 fi
