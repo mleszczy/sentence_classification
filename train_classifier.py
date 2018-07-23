@@ -2,6 +2,7 @@ import os
 import sys
 import argparse
 import time
+import pickle
 import random
 
 import numpy as np
@@ -63,28 +64,36 @@ class Model(nn.Module):
             output = self.drop(output)
         return self.out(output)
 
-def eval_model(niter, model, valid_x, valid_y):
+def eval_model(niter, model, valid_x, valid_y, pred_file=None):
     model.eval()
     N = len(valid_x)
     criterion = nn.CrossEntropyLoss()
     correct = 0.0
-    cnt = 0
+    cnt = 0.0
     total_loss = 0.0
+    preds = []
     for x, y in zip(valid_x, valid_y):
         x, y = Variable(x, volatile=True), Variable(y)
         output = model(x)
         loss = criterion(output, y)
         total_loss += loss.data[0]*x.size(1)
         pred = output.data.max(1)[1]
-        correct += pred.eq(y.data).cpu().sum()
+        correct += pred.eq(y.data).cpu().sum().item()
         cnt += y.numel()
+        preds.append(pred)
+
+    if pred_file is not None:
+        with open(pred_file, 'wb') as outfile:
+            pickle.dump(pred, outfile)
+
     model.train()
     return 1.0-correct/cnt
 
 def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
         test_x, test_y,
-        best_valid, test_err):
+        best_valid, test_err,
+        pred_file=None):
 
     model.train()
     args = model.args
@@ -114,7 +123,7 @@ def train_model(epoch, model, optimizer,
 
     if valid_err < best_valid:
         best_valid = valid_err
-        test_err = eval_model(niter, model, test_x, test_y)
+        test_err = eval_model(niter, model, test_x, test_y, pred_file)
     return best_valid, test_err
 
 def main(args):
@@ -190,7 +199,8 @@ def main(args):
             train_x, train_y,
             valid_x, valid_y,
             test_x, test_y,
-            best_valid, test_err
+            best_valid, test_err,
+            args.out
         )
         if args.lr_decay>0:
             optimizer.param_groups[0]['lr'] *= args.lr_decay
@@ -226,6 +236,7 @@ if __name__ == "__main__":
     argparser.add_argument("--lr_decay", type=float, default=0.0)
     argparser.add_argument("--cv", type=int, default=0)
     argparser.add_argument("--seed", type=int, default=1234)
+    argparser.add_argument("--out", type=str, help="Save predictions to this file.")
     args = argparser.parse_args()
 
     # Set random seed for torch
