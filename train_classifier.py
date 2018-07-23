@@ -80,11 +80,11 @@ def eval_model(niter, model, valid_x, valid_y, pred_file=None):
         pred = output.data.max(1)[1]
         correct += pred.eq(y.data).cpu().sum().item()
         cnt += y.numel()
-        preds.append(pred)
+        preds.extend(list(pred.cpu().numpy()))
 
     if pred_file is not None:
         with open(pred_file, 'wb') as outfile:
-            pickle.dump(pred, outfile)
+            pickle.dump(preds, outfile)
 
     model.train()
     return 1.0-correct/cnt
