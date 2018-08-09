@@ -4,6 +4,7 @@ import argparse
 import time
 import pickle
 import random
+import math
 
 import numpy as np
 import torch
@@ -64,7 +65,7 @@ class Model(nn.Module):
             output = self.drop(output)
         return self.out(output)
 
-def eval_model(niter, model, valid_x, valid_y, pred_file=None):
+def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     model.eval()
     N = len(valid_x)
     criterion = nn.CrossEntropyLoss()
@@ -72,6 +73,7 @@ def eval_model(niter, model, valid_x, valid_y, pred_file=None):
     cnt = 0.0
     total_loss = 0.0
     preds = []
+    probs = []
     for x, y in zip(valid_x, valid_y):
         x, y = Variable(x, volatile=True), Variable(y)
         output = model(x)
@@ -80,11 +82,16 @@ def eval_model(niter, model, valid_x, valid_y, pred_file=None):
         pred = output.data.max(1)[1]
         correct += pred.eq(y.data).cpu().sum().item()
         cnt += y.numel()
-        preds.extend(list(pred.cpu().numpy()))
+        preds += pred.cpu().numpy().tolist()
+        probs += output.data.cpu().numpy().tolist()
 
     if pred_file is not None:
         with open(pred_file, 'wb') as outfile:
             pickle.dump(preds, outfile)
+
+    if prob_file is not None:
+         with open(prob_file, 'wb') as outfile:
+            pickle.dump(probs, outfile)
 
     model.train()
     return 1.0-correct/cnt
@@ -93,7 +100,7 @@ def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
         test_x, test_y,
         best_valid, test_err,
-        pred_file=None):
+        pred_file=None, prob_file=None):
 
     model.train()
     args = model.args
@@ -112,7 +119,7 @@ def train_model(epoch, model, optimizer,
         loss.backward()
         optimizer.step()
 
-    valid_err = eval_model(niter, model, valid_x, valid_y)
+    valid_err = eval_model(model, valid_x, valid_y)
 
     logger.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
         epoch, niter,
@@ -123,8 +130,11 @@ def train_model(epoch, model, optimizer,
 
     if valid_err < best_valid:
         best_valid = valid_err
-        test_err = eval_model(niter, model, test_x, test_y, pred_file)
+        test_err = eval_model(model, test_x, test_y, pred_file, prob_file)
     return best_valid, test_err
+
+def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
+    return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
 
 def main(args):
     if args.dataset == 'mr':
@@ -194,16 +204,63 @@ def main(args):
 
     best_valid = 1e+8
     test_err = 1e+8
-    for epoch in range(args.max_epoch):
-        best_valid, test_err = train_model(epoch, model, optimizer,
-            train_x, train_y,
-            valid_x, valid_y,
-            test_x, test_y,
-            best_valid, test_err,
-            args.out
-        )
-        if args.lr_decay>0:
-            optimizer.param_groups[0]['lr'] *= args.lr_decay
+    tag = "model_cnn_cv_{}_dropout_{}_seed_{}_lr_{}".format(
+        args.cv, args.dropout, args.seed, args.lr)
+    pred_file = os.path.join("{tag}.pred".format(tag=tag))
+    prob_file = os.path.join("{tag}.prob".format(tag=tag))
+
+    # Normal training
+    if not args.snapshot:
+        for epoch in range(args.max_epoch):
+            best_valid, test_err = train_model(epoch, model, optimizer,
+                train_x, train_y,
+                valid_x, valid_y,
+                test_x, test_y,
+                best_valid, test_err,
+                pred_file
+            )
+            if args.lr_decay>0:
+                optimizer.param_groups[0]['lr'] *= args.lr_decay
+
+    # Snapshot ensembling
+    else:
+        # Modified from https://github.com/moskomule/pytorch.snapshot.ensembles
+        logger.info("Using snapshot ensembling.")
+        snapshot_dir = os.path.join(args.out, "snapshots")
+        if not os.path.exists(snapshot_dir):
+            os.makedirs(snapshot_dir)
+        cycles = args.cycles
+        epochs = args.max_epoch
+        epochs_per_cycle = epochs // cycles
+        if epochs % cycles != 0:
+            logger.warning("Total number of epochs is not divisible by number of cycles.")
+        epoch = 0
+        for cycle in range(cycles):
+            logger.info("Cycle {cycle}".format(cycle=cycle+1))
+            cycle_tag = "{tag}_cycle_{cycle}".format(tag=tag, cycle=cycle)
+            for cycle_epoch in range(epochs_per_cycle):
+                lr = cyclic_lr(args.lr, cycle_epoch, epochs_per_cycle)
+                # Update learning rate to cyclic learning rate
+                optimizer.param_groups[0]['lr'] = lr
+                best_valid, test_err = train_model(epoch, model, optimizer,
+                    train_x, train_y,
+                    valid_x, valid_y,
+                    test_x, test_y,
+                    best_valid, test_err,
+                    pred_file, prob_file
+                )
+                # Running count of total epochs
+                epoch += 1
+
+            # Save preds and probs for each snapshot
+            pred_file = os.path.join(snapshot_dir, "{cycle_tag}.pred".format(cycle_tag=cycle_tag))
+            prob_file = os.path.join(snapshot_dir, "{cycle_tag}.prob".format(cycle_tag=cycle_tag))
+            eval_model(model, test_x, test_y, pred_file, prob_file)
+
+            # Checkpoint model at the end of the cycle
+            ckpt_file = os.path.join(snapshot_dir, "{cycle_tag}.ckpt".format(cycle_tag=cycle_tag))
+            save(model, optimizer, epoch, ckpt_file)
+
 
     logger.info("=" * 40)
     logger.info("best_valid: {:.6f}".format(
@@ -236,7 +293,9 @@ if __name__ == "__main__":
     argparser.add_argument("--lr_decay", type=float, default=0.0)
     argparser.add_argument("--cv", type=int, default=0)
     argparser.add_argument("--seed", type=int, default=1234)
-    argparser.add_argument("--out", type=str, help="Save predictions to this file.")
+    argparser.add_argument("--out", type=str, help="Path to output directory.")
+    argparser.add_argument("--snapshot", action='store_true', help="Use snapshot ensembling")
+    argparser.add_argument("--cycles", type=int, help="Number of cycles/snapshots to take")
     args = argparser.parse_args()
 
     # Set random seed for torch

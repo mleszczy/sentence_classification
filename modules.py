@@ -63,7 +63,7 @@ class EmbeddingLayer(nn.Module):
 
         self.word2id = word2id
         self.n_V, self.n_d = len(word2id), n_d
-        print("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
+        logger.info("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
             self.n_V, len(embwords), self.n_V - len(embwords)))
         self.oovid = word2id[oov]
         self.padid = word2id[pad]
