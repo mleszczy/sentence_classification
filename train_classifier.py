@@ -156,10 +156,31 @@ def main(args):
     else:
         raise Exception("unknown dataset: {}".format(args.dataset))
 
-    emb_layer = modules.EmbeddingLayer(
-        args.d, data,
-        embs = dataloader.load_embedding(args.embedding)
-    )
+    if args.embedding:
+        logger.info("Using single embedding file.")
+        emb_layer = modules.EmbeddingLayer(
+            args.d, data,
+            embs = dataloader.load_embedding(args.embedding),
+            normalize=args.normalize
+        )
+    elif args.embedding_list:
+        logger.info("Using embedding list.")
+        embedding_list = []
+        with open(args.embedding_list, 'r') as f:
+            lines = f.readlines()
+            # logger.info(len(lines), args.cycles)
+            assert len(lines) >= args.cycles
+            for i, emb in enumerate(lines):
+                embedding_list.append(modules.EmbeddingLayer(
+                                    args.d, data,
+                                    embs = dataloader.load_embedding(emb.strip()),
+                                    normalize=args.normalize))
+        emb_layer = embedding_list[0]
+    else:
+        raise ValueError("Need to provide embedding or list of embeddings.")
+    print("Embedding list length", len(embedding_list))
+
+    orig_emb_layer = emb_layer
 
     if args.dataset == 'trec':
         train_x, train_y, valid_x, valid_y = dataloader.cv_split2(
@@ -226,7 +247,8 @@ def main(args):
     else:
         # Modified from https://github.com/moskomule/pytorch.snapshot.ensembles
         logger.info("Using snapshot ensembling.")
-        snapshot_dir = os.path.join(args.out, "snapshots")
+        snapshot_dir = os.path.join(args.out, "snapshots_{}".format(args.cycles))
+
         if not os.path.exists(snapshot_dir):
             os.makedirs(snapshot_dir)
         cycles = args.cycles
@@ -261,6 +283,13 @@ def main(args):
             ckpt_file = os.path.join(snapshot_dir, "{cycle_tag}.ckpt".format(cycle_tag=cycle_tag))
             save(model, optimizer, epoch, ckpt_file)
 
+            # Update embedding layer
+            emb_layer = embedding_list[cycle]
+
+            # TODO: do we need to recreate batches?
+            assert(emb_layer.word2id == orig_emb_layer.word2id)
+            assert(emb_layer.n_d == orig_emb_layer.n_d)
+            model.emb_layer = emb_layer
 
     logger.info("=" * 40)
     logger.info("best_valid: {:.6f}".format(
@@ -281,9 +310,10 @@ if __name__ == "__main__":
     argparser.add_argument("--cnn", action='store_true', help="whether to use cnn")
     argparser.add_argument("--lstm", action='store_true', help="whether to use lstm")
     argparser.add_argument("--la", action='store_true', help="whether to use la")
+    argparser.add_argument("--normalize", action='store_true', help="Normalize embeddings.")
     argparser.add_argument("--dataset", type=str, default="mr", help="which dataset")
     argparser.add_argument("--path", type=str, required=True, help="path to corpus directory")
-    argparser.add_argument("--embedding", type=str, required=True, help="word vectors")
+    argparser.add_argument("--embedding", type=str, help="word vectors")
     argparser.add_argument("--batch_size", "--batch", type=int, default=32)
     argparser.add_argument("--max_epoch", type=int, default=100)
     argparser.add_argument("--d", type=int, default=128)
@@ -296,6 +326,7 @@ if __name__ == "__main__":
     argparser.add_argument("--out", type=str, help="Path to output directory.")
     argparser.add_argument("--snapshot", action='store_true', help="Use snapshot ensembling")
     argparser.add_argument("--cycles", type=int, help="Number of cycles/snapshots to take")
+    argparser.add_argument("--embedding_list", type=str, help="list of word vector files")
     args = argparser.parse_args()
 
     # Set random seed for torch
