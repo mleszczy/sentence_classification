@@ -93,6 +93,7 @@ def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
         test_x, test_y,
         best_valid, test_err,
+        save_mdl=None,
         pred_file=None):
 
     model.train()
@@ -125,8 +126,8 @@ def train_model(epoch, model, optimizer,
         best_valid = valid_err
         test_err = eval_model(niter, model, test_x, test_y, pred_file)
         # Save model
-        if args.save_mdl is not None:
-            torch.save(model, args.save_mdl)
+        if save_mdl is not None:
+            torch.save(model, save_mdl)
 
     return best_valid, test_err
 
@@ -200,7 +201,7 @@ def main(args):
         model = Model(args, emb_layer, nclasses).cuda()
     else:
         # Note: this will overwrite all parameters
-        model = torch.load(args.load_mdl)
+        model = torch.load(args.load_mdl).cuda()
 
     need_grad = lambda x: x.requires_grad
     optimizer = optim.Adam(
@@ -216,6 +217,7 @@ def main(args):
             valid_x, valid_y,
             test_x, test_y,
             best_valid, test_err,
+            args.save_mdl,
             args.out
         )
         if args.lr_decay>0:
