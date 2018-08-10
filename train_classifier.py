@@ -148,7 +148,8 @@ def main(args):
 
     emb_layer = modules.EmbeddingLayer(
         args.d, data,
-        embs = dataloader.load_embedding(args.embedding)
+        embs = dataloader.load_embedding(args.embedding),
+        normalize = args.normalize
     )
 
     if args.dataset == 'trec':
@@ -224,6 +225,7 @@ if __name__ == "__main__":
     argparser.add_argument("--cnn", action='store_true', help="whether to use cnn")
     argparser.add_argument("--lstm", action='store_true', help="whether to use lstm")
     argparser.add_argument("--la", action='store_true', help="whether to use la")
+    argparser.add_argument("--normalize", action='store_true', help="Normalize embeddings")
     argparser.add_argument("--dataset", type=str, default="mr", help="which dataset")
     argparser.add_argument("--path", type=str, required=True, help="path to corpus directory")
     argparser.add_argument("--embedding", type=str, required=True, help="word vectors")
