@@ -168,17 +168,17 @@ def main(args):
         embedding_list = []
         with open(args.embedding_list, 'r') as f:
             lines = f.readlines()
-            # logger.info(len(lines), args.cycles)
             assert len(lines) >= args.cycles
             for i, emb in enumerate(lines):
+                logger.info("Embedding file: {embfile}".format(embfile=emb.strip()))
                 embedding_list.append(modules.EmbeddingLayer(
                                     args.d, data,
                                     embs = dataloader.load_embedding(emb.strip()),
-                                    normalize=args.normalize))
+                                    normalize=args.normalize).cuda())
         emb_layer = embedding_list[0]
+        print("Embedding list length", len(embedding_list))
     else:
         raise ValueError("Need to provide embedding or list of embeddings.")
-    print("Embedding list length", len(embedding_list))
 
     orig_emb_layer = emb_layer
 
@@ -225,10 +225,18 @@ def main(args):
 
     best_valid = 1e+8
     test_err = 1e+8
-    tag = "model_cnn_cv_{}_dropout_{}_seed_{}_lr_{}".format(
-        args.cv, args.dropout, args.seed, args.lr)
-    pred_file = os.path.join("{tag}.pred".format(tag=tag))
-    prob_file = os.path.join("{tag}.prob".format(tag=tag))
+    if args.cnn:
+        tag = "model_cnn_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+            cv=args.cv, dropout=args.dropout, seed=args.seed, lr=args.lr)
+    elif args.la:
+         tag = "model_la_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+            cv=args.cv, dropout=args.dropout, seed=args.seed, lr=args.lr)
+    elif args.lstm:
+        tag = "model_lstm_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+            cv=args.cv, dropout=args.dropout, seed=args.seed, lr=args.lr)
+
+    pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
+    prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
 
     # Normal training
     if not args.snapshot:
@@ -258,7 +266,7 @@ def main(args):
             logger.warning("Total number of epochs is not divisible by number of cycles.")
         epoch = 0
         for cycle in range(cycles):
-            logger.info("Cycle {cycle}".format(cycle=cycle+1))
+            logger.info("Cycle {cycle}".format(cycle=cycle))
             cycle_tag = "{tag}_cycle_{cycle}".format(tag=tag, cycle=cycle)
             for cycle_epoch in range(epochs_per_cycle):
                 lr = cyclic_lr(args.lr, cycle_epoch, epochs_per_cycle)
