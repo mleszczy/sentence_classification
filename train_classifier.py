@@ -93,6 +93,7 @@ def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
         test_x, test_y,
         best_valid, test_err,
+        save_mdl=None,
         pred_file=None):
 
     model.train()
@@ -124,23 +125,27 @@ def train_model(epoch, model, optimizer,
     if valid_err < best_valid:
         best_valid = valid_err
         test_err = eval_model(niter, model, test_x, test_y, pred_file)
+        # Save model
+        if save_mdl is not None:
+            torch.save(model, save_mdl)
+
     return best_valid, test_err
 
 def main(args):
     if args.dataset == 'mr':
-        data, label = dataloader.read_MR(args.path, seed=args.seed)
+        data, label = dataloader.read_MR(args.path, seed=args.data_seed)
     elif args.dataset == 'subj':
-        data, label = dataloader.read_SUBJ(args.path, seed=args.seed)
+        data, label = dataloader.read_SUBJ(args.path, seed=args.data_seed)
     elif args.dataset == 'cr':
-        data, label = dataloader.read_CR(args.path, seed=args.seed)
+        data, label = dataloader.read_CR(args.path, seed=args.data_seed)
     elif args.dataset == 'mpqa':
-        data, label = dataloader.read_MPQA(args.path, seed=args.seed)
+        data, label = dataloader.read_MPQA(args.path, seed=args.data_seed)
     elif args.dataset == 'trec':
-        train_x, train_y, test_x, test_y = dataloader.read_TREC(args.path, seed=args.seed)
+        train_x, train_y, test_x, test_y = dataloader.read_TREC(args.path, seed=args.data_seed)
         data = train_x + test_x
         label = None
     elif args.dataset == 'sst':
-        train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_SST(args.path, seed=args.seed)
+        train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_SST(args.path, seed=args.data_seed)
         data = train_x + valid_x + test_x
         label = None
     else:
@@ -186,7 +191,19 @@ def main(args):
         sort = args.dataset == 'sst'
     )
 
-    model = Model(args, emb_layer, nclasses).cuda()
+    # Set random seed for torch
+    torch.manual_seed(args.model_seed)
+    torch.cuda.manual_seed(args.model_seed)
+
+    # Set random seed for numpy
+    np.random.seed(seed=args.model_seed)
+
+    if args.load_mdl is None:
+        model = Model(args, emb_layer, nclasses).cuda()
+    else:
+        # Note: this will overwrite all parameters
+        model = torch.load(args.load_mdl).cuda()
+
     need_grad = lambda x: x.requires_grad
     optimizer = optim.Adam(
         filter(need_grad, model.parameters()),
@@ -201,6 +218,7 @@ def main(args):
             valid_x, valid_y,
             test_x, test_y,
             best_valid, test_err,
+            args.save_mdl,
             args.out
         )
         if args.lr_decay>0:
@@ -214,7 +232,6 @@ def main(args):
         test_err
     ))
     logger.info("=" * 40)
-
 
 if __name__ == "__main__":
 
@@ -237,16 +254,12 @@ if __name__ == "__main__":
     argparser.add_argument("--lr", type=float, default=0.001)
     argparser.add_argument("--lr_decay", type=float, default=0.0)
     argparser.add_argument("--cv", type=int, default=0)
-    argparser.add_argument("--seed", type=int, default=1234)
+    argparser.add_argument("--model_seed", type=int, default=1234)
+    argparser.add_argument("--data_seed", type=int, default=1234)
     argparser.add_argument("--out", type=str, help="Save predictions to this file.")
+    argparser.add_argument("--save_mdl", type=str, default=None, help="Save model to this file.")
+    argparser.add_argument("--load_mdl", type=str, default=None, help="Load model from this file.")
     args = argparser.parse_args()
-
-    # Set random seed for torch
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
-
-    # Set random seed for numpy
-    np.random.seed(seed=int(args.seed))
 
     # Dump command line arguments
     logger.info("Machine: " + os.uname()[1])
