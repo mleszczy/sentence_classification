@@ -4,6 +4,7 @@ import argparse
 import time
 import pickle
 import random
+import math
 
 import numpy as np
 import torch
@@ -64,7 +65,7 @@ class Model(nn.Module):
             output = self.drop(output)
         return self.out(output)
 
-def eval_model(niter, model, valid_x, valid_y, pred_file=None):
+def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     model.eval()
     N = len(valid_x)
     criterion = nn.CrossEntropyLoss()
@@ -72,6 +73,7 @@ def eval_model(niter, model, valid_x, valid_y, pred_file=None):
     cnt = 0.0
     total_loss = 0.0
     preds = []
+    probs = []
     for x, y in zip(valid_x, valid_y):
         x, y = Variable(x, volatile=True), Variable(y)
         output = model(x)
@@ -80,11 +82,16 @@ def eval_model(niter, model, valid_x, valid_y, pred_file=None):
         pred = output.data.max(1)[1]
         correct += pred.eq(y.data).cpu().sum().item()
         cnt += y.numel()
-        preds.extend(list(pred.cpu().numpy()))
+        preds += pred.cpu().numpy().tolist()
+        probs += output.data.cpu().numpy().tolist()
 
     if pred_file is not None:
         with open(pred_file, 'wb') as outfile:
             pickle.dump(preds, outfile)
+
+    if prob_file is not None:
+         with open(prob_file, 'wb') as outfile:
+            pickle.dump(probs, outfile)
 
     model.train()
     return 1.0-correct/cnt
@@ -94,8 +101,8 @@ def train_model(epoch, model, optimizer,
         test_x, test_y,
         best_valid, test_err,
         save_mdl=None,
-        pred_file=None):
-
+        pred_file=None,
+        prob_file=None):
     model.train()
     args = model.args
     N = len(train_x)
@@ -113,7 +120,7 @@ def train_model(epoch, model, optimizer,
         loss.backward()
         optimizer.step()
 
-    valid_err = eval_model(niter, model, valid_x, valid_y)
+    valid_err = eval_model(model, valid_x, valid_y)
 
     logger.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
         epoch, niter,
@@ -124,12 +131,14 @@ def train_model(epoch, model, optimizer,
 
     if valid_err < best_valid:
         best_valid = valid_err
-        test_err = eval_model(niter, model, test_x, test_y, pred_file)
+        test_err = eval_model(model, test_x, test_y, pred_file=pred_file, prob_file=prob_file)
         # Save model
         if save_mdl is not None:
             torch.save(model, save_mdl)
-
     return best_valid, test_err
+
+def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
+    return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
 
 def main(args):
     if args.dataset == 'mr':
@@ -151,11 +160,31 @@ def main(args):
     else:
         raise Exception("unknown dataset: {}".format(args.dataset))
 
-    emb_layer = modules.EmbeddingLayer(
-        args.d, data,
-        embs = dataloader.load_embedding(args.embedding),
-        normalize = args.normalize
-    )
+    if args.embedding:
+        logger.info("Using single embedding file.")
+        emb_layer = modules.EmbeddingLayer(
+            args.d, data,
+            embs = dataloader.load_embedding(args.embedding),
+            normalize=not args.no_normalize
+        )
+    elif args.embedding_list:
+        logger.info("Using embedding list.")
+        embedding_list = []
+        with open(args.embedding_list, 'r') as f:
+            lines = f.readlines()
+            assert len(lines) >= args.cycles
+            for i, emb in enumerate(lines):
+                logger.info("Embedding file: {embfile}".format(embfile=emb.strip()))
+                embedding_list.append(modules.EmbeddingLayer(
+                                    args.d, data,
+                                    embs = dataloader.load_embedding(emb.strip()),
+                                    normalize=not args.no_normalize).cuda())
+        emb_layer = embedding_list[0]
+        print("Embedding list length", len(embedding_list))
+    else:
+        raise ValueError("Need to provide embedding or list of embeddings.")
+
+    orig_emb_layer = emb_layer
 
     if args.dataset == 'trec':
         train_x, train_y, valid_x, valid_y = dataloader.cv_split2(
@@ -212,17 +241,80 @@ def main(args):
 
     best_valid = 1e+8
     test_err = 1e+8
-    for epoch in range(args.max_epoch):
-        best_valid, test_err = train_model(epoch, model, optimizer,
-            train_x, train_y,
-            valid_x, valid_y,
-            test_x, test_y,
-            best_valid, test_err,
-            args.save_mdl,
-            args.out
-        )
-        if args.lr_decay>0:
-            optimizer.param_groups[0]['lr'] *= args.lr_decay
+
+    if args.cnn:
+        tag = "model_cnn_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+            cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+    elif args.la:
+         tag = "model_la_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+            cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+    elif args.lstm:
+        tag = "model_lstm_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+            cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+
+    pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
+    prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
+
+    # Normal training
+    if not args.snapshot:
+        for epoch in range(args.max_epoch):
+            best_valid, test_err = train_model(epoch, model, optimizer,
+                train_x, train_y,
+                valid_x, valid_y,
+                test_x, test_y,
+                best_valid, test_err,
+                save_mdl=args.save_mdl,
+                pred_file=pred_file,
+                prob_file=prob_file
+            )
+            if args.lr_decay>0:
+                optimizer.param_groups[0]['lr'] *= args.lr_decay
+
+    # Snapshot ensembling
+    else:
+        # Modified from https://github.com/moskomule/pytorch.snapshot.ensembles
+        logger.info("Using snapshot ensembling.")
+        snapshot_dir = os.path.join(args.out, "snapshots_{}".format(args.cycles))
+
+        if not os.path.exists(snapshot_dir):
+            os.makedirs(snapshot_dir)
+        cycles = args.cycles
+        epochs = args.max_epoch
+        epochs_per_cycle = epochs // cycles
+        if epochs % cycles != 0:
+            logger.warning("Total number of epochs is not divisible by number of cycles.")
+        epoch = 0
+        for cycle in range(cycles):
+            logger.info("Cycle {cycle}".format(cycle=cycle))
+            cycle_tag = "{tag}_cycle_{cycle}".format(tag=tag, cycle=cycle)
+            for cycle_epoch in range(epochs_per_cycle):
+                lr = cyclic_lr(args.lr, cycle_epoch, epochs_per_cycle)
+                # Update learning rate to cyclic learning rate
+                optimizer.param_groups[0]['lr'] = lr
+                best_valid, test_err = train_model(epoch, model, optimizer,
+                    train_x, train_y,
+                    valid_x, valid_y,
+                    test_x, test_y,
+                    best_valid, test_err
+                )
+                # Running count of total epochs
+                epoch += 1
+
+            # Save preds and probs for each snapshot *at the end of the snapshot*
+            pred_file = os.path.join(snapshot_dir, "{cycle_tag}.pred".format(cycle_tag=cycle_tag))
+            prob_file = os.path.join(snapshot_dir, "{cycle_tag}.prob".format(cycle_tag=cycle_tag))
+            eval_model(model, test_x, test_y, pred_file=pred_file, prob_file=prob_file)
+
+            # Checkpoint model at the end of the cycle
+            ckpt_file = os.path.join(snapshot_dir, "{cycle_tag}.ckpt".format(cycle_tag=cycle_tag))
+            save(model, optimizer, epoch, ckpt_file)
+
+            # Update embedding layer
+            emb_layer = embedding_list[cycle]
+
+            assert(emb_layer.word2id == orig_emb_layer.word2id)
+            assert(emb_layer.n_d == orig_emb_layer.n_d)
+            model.emb_layer = emb_layer
 
     logger.info("=" * 40)
     logger.info("best_valid: {:.6f}".format(
@@ -242,10 +334,10 @@ if __name__ == "__main__":
     argparser.add_argument("--cnn", action='store_true', help="whether to use cnn")
     argparser.add_argument("--lstm", action='store_true', help="whether to use lstm")
     argparser.add_argument("--la", action='store_true', help="whether to use la")
-    argparser.add_argument("--normalize", action='store_true', help="Normalize embeddings")
+    argparser.add_argument("--no_normalize", action='store_true', help="Do not normalize embeddings")
     argparser.add_argument("--dataset", type=str, default="mr", help="which dataset")
     argparser.add_argument("--path", type=str, required=True, help="path to corpus directory")
-    argparser.add_argument("--embedding", type=str, required=True, help="word vectors")
+    argparser.add_argument("--embedding", type=str, help="word vectors")
     argparser.add_argument("--batch_size", "--batch", type=int, default=32)
     argparser.add_argument("--max_epoch", type=int, default=100)
     argparser.add_argument("--d", type=int, default=128)
@@ -256,9 +348,12 @@ if __name__ == "__main__":
     argparser.add_argument("--cv", type=int, default=0)
     argparser.add_argument("--model_seed", type=int, default=1234)
     argparser.add_argument("--data_seed", type=int, default=1234)
-    argparser.add_argument("--out", type=str, help="Save predictions to this file.")
     argparser.add_argument("--save_mdl", type=str, default=None, help="Save model to this file.")
     argparser.add_argument("--load_mdl", type=str, default=None, help="Load model from this file.")
+    argparser.add_argument("--out", type=str, help="Path to output directory.")
+    argparser.add_argument("--snapshot", action='store_true', help="Use snapshot ensembling")
+    argparser.add_argument("--cycles", type=int, help="Number of cycles/snapshots to take")
+    argparser.add_argument("--embedding_list", type=str, help="list of word vector files")
     args = argparser.parse_args()
 
     # Dump command line arguments
