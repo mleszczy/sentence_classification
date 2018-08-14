@@ -242,15 +242,18 @@ def main(args):
     best_valid = 1e+8
     test_err = 1e+8
 
-    if args.cnn:
-        tag = "model_cnn_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-            cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
-    elif args.la:
-         tag = "model_la_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-            cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
-    elif args.lstm:
-        tag = "model_lstm_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-            cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+    if not args.tag:
+        if args.cnn:
+            tag = "model_cnn_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+        elif args.la:
+             tag = "model_la_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+        elif args.lstm:
+            tag = "model_lstm_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+    else: # enables deprecated use of naming
+        tag = args.tag
 
     pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
     prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
@@ -309,12 +312,12 @@ def main(args):
             ckpt_file = os.path.join(snapshot_dir, "{cycle_tag}.ckpt".format(cycle_tag=cycle_tag))
             save(model, optimizer, epoch, ckpt_file)
 
-            # Update embedding layer
-            emb_layer = embedding_list[cycle]
-
-            assert(emb_layer.word2id == orig_emb_layer.word2id)
-            assert(emb_layer.n_d == orig_emb_layer.n_d)
-            model.emb_layer = emb_layer
+            # Update embedding layer if there are multiple embeddings
+            if args.embedding_list is not None:
+                emb_layer = embedding_list[cycle]
+                assert(emb_layer.word2id == orig_emb_layer.word2id)
+                assert(emb_layer.n_d == orig_emb_layer.n_d)
+                model.emb_layer = emb_layer
 
     logger.info("=" * 40)
     logger.info("best_valid: {:.6f}".format(
@@ -353,7 +356,8 @@ if __name__ == "__main__":
     argparser.add_argument("--out", type=str, help="Path to output directory.")
     argparser.add_argument("--snapshot", action='store_true', help="Use snapshot ensembling")
     argparser.add_argument("--cycles", type=int, help="Number of cycles/snapshots to take")
-    argparser.add_argument("--embedding_list", type=str, help="list of word vector files")
+    argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
+    argparser.add_argument("--tag", type=str, help="Tag for naming files")
     args = argparser.parse_args()
 
     # Dump command line arguments

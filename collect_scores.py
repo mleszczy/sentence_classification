@@ -26,8 +26,12 @@ if task in tasks[:-1]:
         valids = []
         tests = []
         for cv in range(10):
-            file_path = log_dir + '/' + task + '_' + emb_type + '_' + emb_name + '_cv_' + str(cv) + '_model_' + model + '_dropout_' + str(dropout) + '_seed_1234.log'
-            # print file_path
+            # file_path = log_dir + '/' + task + '_' + emb_type + '_' + emb_name + '_cv_' + str(cv) + '_model_' + model + '_dropout_' + str(dropout) + '_seed_1234.log'
+            file_path = os.path.join(log_dir, "{task}_{emb_type}_{emb_name}".format(
+                task=task, emb_type=emb_type, emb_name=emb_name),
+                "{task}_{emb_type}_{emb_name}_cv_{cv}_model_{model}_dropout_{do}_seed_1234.log".format(
+                task=task, emb_type=emb_type, emb_name=emb_name, cv=cv, model=model, do=dropout))
+            print file_path
             assert os.path.isfile(file_path), 'Cannot find the file!!'
             ff = open(file_path, 'r')
             dat = [_.strip() for _ in ff]
@@ -52,7 +56,7 @@ if task in tasks[:-1]:
             best_test_std = test_mean_std
         # print best_valid, best_valid_std, best_test, best_test_std
     # print best_valid, best_valid_std, best_test, best_test_std
-    print best_test, best_test_std
+    print valid_mean, valid_mean_std
 
 
 
