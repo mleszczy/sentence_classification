@@ -220,13 +220,6 @@ def main(args):
         sort = args.dataset == 'sst'
     )
 
-    # Set random seed for torch
-    torch.manual_seed(args.model_seed)
-    torch.cuda.manual_seed(args.model_seed)
-
-    # Set random seed for numpy
-    np.random.seed(seed=args.model_seed)
-
     if args.load_mdl is None:
         model = Model(args, emb_layer, nclasses).cuda()
     else:
@@ -329,8 +322,8 @@ def main(args):
     logger.info("=" * 40)
 
 if __name__ == "__main__":
-
     # Set logging
+
     logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
 
     argparser = argparse.ArgumentParser(sys.argv[0], conflict_handler='resolve')
@@ -358,7 +351,19 @@ if __name__ == "__main__":
     argparser.add_argument("--cycles", type=int, help="Number of cycles/snapshots to take")
     argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
+    argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
     args = argparser.parse_args()
+
+    if args.no_cudnn:
+        torch.backends.cudnn.enabled = False
+        logging.info("CuDNN Disabled!!!")
+
+    # Set random seed for torch
+    torch.manual_seed(args.model_seed)
+    torch.cuda.manual_seed(args.model_seed)
+
+    # Set random seed for numpy
+    np.random.seed(seed=args.model_seed)
 
     # Dump command line arguments
     logger.info("Machine: " + os.uname()[1])
