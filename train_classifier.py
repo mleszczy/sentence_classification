@@ -5,6 +5,8 @@ import time
 import pickle
 import random
 import math
+from subprocess import check_output
+import hashlib
 
 import numpy as np
 import torch
@@ -353,6 +355,15 @@ if __name__ == "__main__":
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
     args = argparser.parse_args()
+
+    # Dump git hash
+    h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+    logger.info("Git hash: " + h)
+
+    # Dump embedding hash
+    if args.embedding:
+        embedding_hash = hashlib.md5(open(args.embedding, 'rb').read()).hexdigest()
+        logger.info("Embedding hash: " + embedding_hash)
 
     if args.no_cudnn:
         torch.backends.cudnn.enabled = False
