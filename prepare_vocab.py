@@ -53,9 +53,7 @@ def main(args):
     embs = dataloader.load_embedding(args.embedding, word2id)
     logger.info("Total size: {}".format(len(embs[0])))
 
-    if not os.path.exists("vocab"):
-        os.makedirs("vocab")
-    pickle.dump(embs, open( "vocab/" + args.output + ".pkl" , "wb" ))
+    pickle.dump(embs, open(args.output + ".pkl" , "wb" ))
 
 if __name__ == "__main__":
 

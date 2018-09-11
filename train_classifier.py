@@ -167,7 +167,8 @@ def main(args):
         emb_layer = modules.EmbeddingLayer(
             args.d, data,
             embs = dataloader.load_embedding(args.embedding),
-            normalize=not args.no_normalize
+            normalize=not args.no_normalize,
+	    fix_emb=not args.fine_tune
         )
     elif args.embedding_list:
         logger.info("Using embedding list.")
@@ -180,7 +181,9 @@ def main(args):
                 embedding_list.append(modules.EmbeddingLayer(
                                     args.d, data,
                                     embs = dataloader.load_embedding(emb.strip()),
-                                    normalize=not args.no_normalize).cuda())
+                                    normalize=not args.no_normalize).cuda(),
+				    fix_emb=not args.fine_tune
+		)
         emb_layer = embedding_list[0]
         print("Embedding list length", len(embedding_list))
     else:
@@ -333,6 +336,7 @@ if __name__ == "__main__":
     argparser.add_argument("--lstm", action='store_true', help="whether to use lstm")
     argparser.add_argument("--la", action='store_true', help="whether to use la")
     argparser.add_argument("--no_normalize", action='store_true', help="Do not normalize embeddings")
+    argparser.add_argument("--fine_tune", action='store_true', help="Fine tune embeddings")
     argparser.add_argument("--dataset", type=str, default="mr", help="which dataset")
     argparser.add_argument("--path", type=str, required=True, help="path to corpus directory")
     argparser.add_argument("--embedding", type=str, help="word vectors")
@@ -357,8 +361,8 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     # Dump git hash
-    h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
-    logger.info("Git hash: " + h)
+    #h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+    #logger.info("Git hash: " + h)
 
     # Dump embedding hash
     if args.embedding:
