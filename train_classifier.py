@@ -226,7 +226,9 @@ def main(args):
         model = Model(args, emb_layer, nclasses).cuda()
     else:
         # Note: this will overwrite all parameters
-        model = torch.load(args.load_mdl).cuda()
+        model = torch.load(args.load_mdl)
+        model.emb_layer = emb_layer
+        model = model.cuda()
 
     need_grad = lambda x: x.requires_grad
     optimizer = optim.Adam(
