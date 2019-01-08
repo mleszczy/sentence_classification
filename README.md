@@ -17,6 +17,8 @@ Code used for sentence classification tasks.
           --cv 0                                # 10-fold cross-validation, use split 0 as the test set
   ```
   
+  - Check **run_sc.sh** for all more details.
+  
   <br>
   
   ### Credits
