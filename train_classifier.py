@@ -18,10 +18,11 @@ import torch.optim as optim
 from torch.autograd import Variable
 
 # import cuda_functional as MF
+sys.path.append(os.path.dirname(__file__))
 import dataloader
 import modules
-
-from utils import *
+from sentutils import *
+sys.path.remove(os.path.dirname(__file__))
 import logging
 
 FORMAT = '%(levelname)s|%(asctime)s|%(name)s|line_num:%(lineno)d| %(message)s'
