@@ -24,8 +24,6 @@ import modules
 from utils import *
 import logging
 
-logger = logging.getLogger(__name__)
-
 FORMAT = '%(levelname)s|%(asctime)s|%(name)s|line_num:%(lineno)d| %(message)s'
 
 class Model(nn.Module):
@@ -126,7 +124,7 @@ def train_model(epoch, model, optimizer,
 
     valid_err = eval_model(model, valid_x, valid_y)
 
-    logger.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
+    logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
         epoch, niter,
         optimizer.param_groups[0]['lr'],
         loss.data[0],
@@ -165,20 +163,20 @@ def main(args):
         raise Exception("unknown dataset: {}".format(args.dataset))
 
     if args.embedding:
-        logger.info("Using single embedding file.")
+        logging.info("Using single embedding file.")
         emb_layer = modules.EmbeddingLayer(
             args.d, data,
             embs = dataloader.load_embedding(args.embedding),
             normalize=not args.no_normalize
         )
     elif args.embedding_list:
-        logger.info("Using embedding list.")
+        logging.info("Using embedding list.")
         embedding_list = []
         with open(args.embedding_list, 'r') as f:
             lines = f.readlines()
             assert len(lines) >= args.cycles
             for i, emb in enumerate(lines):
-                logger.info("Embedding file: {embfile}".format(embfile=emb.strip()))
+                logging.info("Embedding file: {embfile}".format(embfile=emb.strip()))
                 embedding_list.append(modules.EmbeddingLayer(
                                     args.d, data,
                                     embs = dataloader.load_embedding(emb.strip()),
@@ -278,7 +276,7 @@ def main(args):
     # Snapshot ensembling
     else:
         # Modified from https://github.com/moskomule/pytorch.snapshot.ensembles
-        logger.info("Using snapshot ensembling.")
+        logging.info("Using snapshot ensembling.")
         snapshot_dir = os.path.join(args.out, "snapshots_{}".format(args.cycles))
 
         if not os.path.exists(snapshot_dir):
@@ -287,10 +285,10 @@ def main(args):
         epochs = args.max_epoch
         epochs_per_cycle = epochs // cycles
         if epochs % cycles != 0:
-            logger.warning("Total number of epochs is not divisible by number of cycles.")
+            logging.warning("Total number of epochs is not divisible by number of cycles.")
         epoch = 0
         for cycle in range(cycles):
-            logger.info("Cycle {cycle}".format(cycle=cycle))
+            logging.info("Cycle {cycle}".format(cycle=cycle))
             cycle_tag = "{tag}_cycle_{cycle}".format(tag=tag, cycle=cycle)
             for cycle_epoch in range(epochs_per_cycle):
                 lr = cyclic_lr(args.lr, cycle_epoch, epochs_per_cycle)
@@ -321,19 +319,17 @@ def main(args):
                 assert(emb_layer.n_d == orig_emb_layer.n_d)
                 model.emb_layer = emb_layer
 
-    logger.info("=" * 40)
-    logger.info("best_valid: {:.6f}".format(
+    logging.info("=" * 40)
+    logging.info("best_valid: {:.6f}".format(
         best_valid
     ))
-    logger.info("test_err: {:.6f}".format(
+    logging.info("test_err: {:.6f}".format(
         test_err
     ))
-    logger.info("=" * 40)
+    logging.info("=" * 40)
     return best_valid, test_err
 
 def train_sentiment(cmdline_args):
-    logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
-
     argparser = argparse.ArgumentParser(sys.argv[0], conflict_handler='resolve')
     argparser.add_argument("--cnn", action='store_true', help="whether to use cnn")
     argparser.add_argument("--lstm", action='store_true', help="whether to use lstm")
@@ -366,12 +362,12 @@ def train_sentiment(cmdline_args):
 
     # Dump git hash
     # h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
-    # logger.info("Git hash: " + h)
+    # logging.info("Git hash: " + h)
 
     # Dump embedding hash
     if args.embedding:
         embedding_hash = hashlib.md5(open(args.embedding, 'rb').read()).hexdigest()
-        logger.info("Embedding hash: " + embedding_hash)
+        logging.info("Embedding hash: " + embedding_hash)
 
     if args.no_cudnn:
         torch.backends.cudnn.enabled = False
@@ -385,107 +381,12 @@ def train_sentiment(cmdline_args):
     np.random.seed(seed=args.model_seed)
 
     # Dump command line arguments
-    logger.info("Machine: " + os.uname()[1])
-    logger.info("CMD: python " +  " ".join(sys.argv))
-    print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logger.info)
+    logging.info("Machine: " + os.uname()[1])
+    logging.info("CMD: python " +  " ".join(sys.argv))
+    print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logging.info)
     # print (args)
     return main(args)
 
-
-def evaluate_sentiment(embed_path, data_path, tunelr=False, dataset="mr"):
-    if tunelr:
-        # TODO need to recover the full list
-        # lrs = [1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1]
-        lrs = [1e-3, 1e-2]
-        results = {}
-        results['best-lr'] = 0
-        results['best-val-err'] = 1e10
-        results['best-test-err'] = 1e10
-        n_fold = 10
-        max_epoch = 1 # TODO update to 100
-        for lr in lrs:
-            err_valid_ave, err_test_ave = 0.0, 0.0
-            for cv_id in range(n_fold):
-                # TODO Jian, we need to change the file name
-                cmdlines = ["--dataset", dataset, 
-                            "--path", data_path + "/", 
-                            "--embedding", embed_path + "/glove.6B.100d.txt", 
-                            "--cv", str(cv_id),
-                            "--cnn", 
-                            "--max_epoch", str(max_epoch), 
-                            "--model_seed", str(cv_id), 
-                            "--data_seed", str(cv_id),
-                            "--lr", str(lr)]
-                err_valid, err_test = train_sentiment(cmdlines)
-                err_valid_ave += err_valid
-                err_test_ave += err_test
-                logger.info(str(cv_id + 1) \
-                    + " folds done with valid/test acc " \
-                    + str(err_valid_ave/(cv_id + 1)) + " / " + str(err_test_ave/(cv_id + 1)) )
-            err_valid_ave /= n_fold
-            err_test_ave /= n_fold
-            results[lr]= {"valid-err": err_valid_ave, "test-err": err_test_ave}
-            if err_valid_ave < results['best-val-err']:
-                results['best-lr'] = lr
-                results['best-val-err'] = err_valid_ave
-                results['best-test-err'] = err_test_ave                
-    else:
-        lr_dict = {'mr': 2e-2, 'subj': 1e-5, 'cr': 1e-4, 'mpqa': 1e-3, 'trec': 1e-2, 'sst': 1e-1}
-        lr = lr_dict[dataset]        
-        results = {}
-        n_fold = 10
-        max_epoch = 5 # TODO update max epoch
-        seed = 1 # TODO how to extract the seed
-        cmdlines = ["--dataset", dataset, 
-                    "--path", data_path + "/", 
-                    "--embedding", embed_path + "/glove.6B.100d.txt", 
-                    "--no_cv", 
-                    "--cnn", 
-                    "--max_epoch", str(max_epoch), 
-                    "--model_seed", str(seed), 
-                    "--data_seed", str(seed),
-                    "--lr", str(lr)]
-        err_valid, err_test = train_sentiment(cmdlines)
-        results["val-err"] = err_valid
-        results["test-err"] = err_test
-    return results
-
-
-if __name__ == "__main__":
-    # # test train_sentiment function
-    # cmdline_args = ["--dataset", "trec", "--path", "../sent-conv-torch/data/", "--embedding", "../../glove.6B.100d.txt", "--cv", "2", "--cnn"]
-    # cmdline_args = ["--dataset", "sst", "--path", "../sent-conv-torch/data/", "--embedding", "../../glove.6B.100d.txt", "--cv", "2", "--cnn", "--no_cv", "--max_epoch", "3", "--model_seed", "1", "--data_seed", "1"]
-    # print(train_sentiment(cmdline_args))
-    # # test train_sentiment eval function
-    # print("final res ", evaluate_sentiment(embed_path="./", 
-    #                    data_path="./third_party/sent-conv-torch/data/", 
-    #                    tunelr=True,
-    #                    dataset="trec"))
-    # confirm on the way to specify the embedding file name
-    # print("final res ", evaluate_sentiment(embed_path="../../", 
-    #                    data_path="../sent-conv-torch/data/", 
-    #                    tunelr=True,
-    #                    dataset="trec"))
-    # print("final res ", evaluate_sentiment(embed_path="../../", 
-    #                    data_path="../sent-conv-torch/data/", 
-    #                    tunelr=True,
-    #                    dataset="sst"))
-    # print("final res ", evaluate_sentiment(embed_path="../../", 
-    #                    data_path="../sent-conv-torch/data/", 
-    #                    tunelr=True,
-    #                    dataset="mr"))
-    # print("final res ", evaluate_sentiment(embed_path="../../", 
-    #                    data_path="../sent-conv-torch/data/", 
-    #                    tunelr=False,
-    #                    dataset="trec"))
-    # print("final res ", evaluate_sentiment(embed_path="../../", 
-    #                    data_path="../sent-conv-torch/data/", 
-    #                    tunelr=False,
-    #                    dataset="sst"))
-    print("final res ", evaluate_sentiment(embed_path="../../", 
-                       data_path="../sent-conv-torch/data/", 
-                       tunelr=False,
-                       dataset="mpqa"))
 
 
     

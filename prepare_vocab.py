@@ -11,8 +11,6 @@ from utils import *
 import logging
 import pickle
 
-logger = logging.getLogger(__name__)
-
 FORMAT = '%(levelname)s|%(asctime)s|%(name)s|line_num:%(lineno)d| %(message)s'
 
 
@@ -48,10 +46,10 @@ def main(args):
     for w in deep_iter(data):
         if w not in word2id:
             word2id[w] = len(word2id)
-    logger.info("Word dict size: {}".format(len(word2id)))
+    logging.info("Word dict size: {}".format(len(word2id)))
 
     embs = dataloader.load_embedding(args.embedding, word2id)
-    logger.info("Total size: {}".format(len(embs[0])))
+    logging.info("Total size: {}".format(len(embs[0])))
 
     if not os.path.exists("vocab"):
         os.makedirs("vocab")
@@ -71,8 +69,8 @@ if __name__ == "__main__":
     args = argparser.parse_args()
 
     # Dump command line arguments
-    logger.info("Machine: " + os.uname()[1])
-    logger.info("CMD: python " +  " ".join(sys.argv))
-    print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logger.info)
+    logging.info("Machine: " + os.uname()[1])
+    logging.info("CMD: python " +  " ".join(sys.argv))
+    print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logging.info)
 
     main(args)

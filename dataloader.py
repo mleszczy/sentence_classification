@@ -9,9 +9,6 @@ import torch
 import pickle
 import logging
 
-logger = logging.getLogger(__name__)
-
-
 def clean_str(string, TREC=False):
     """
     Tokenization/string cleaning for all datasets except for SST.
@@ -192,7 +189,7 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
         batches_x = [ batches_x[i] for i in perm ]
         batches_y = [ batches_y[i] for i in perm ]
 
-    logger.info("{} batches, avg len: {:.1f}".format(
+    logging.info("{} batches, avg len: {:.1f}".format(
         nbatch, sum_len/nbatch
     ))
 
@@ -214,7 +211,7 @@ def load_embedding_txt(path, word_dict):
             if line:
                 parts = line.split()
                 if len(parts) == 2:
-                    logger.info("Skipping meta in embedding file.")
+                    logging.info("Skipping meta in embedding file.")
                     continue
                 if word_dict is not None and parts[0] not in word_dict:
                     continue

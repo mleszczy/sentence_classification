@@ -1,8 +1,6 @@
 import logging
 import torch
 
-logger = logging.getLogger(__name__)
-
 def print_key_pairs(v, title="Parameters", print_function=None):
     """
     Dump key/value pairs to print_function
@@ -30,7 +28,7 @@ def save(model, optimizer, epoch, filename):
     try:
         torch.save(params, filename)
     except BaseException:
-        logger.warning("[ Warning: model saving failed. ]")
+        logging.warning("[ Warning: model saving failed. ]")
 
 def load(model, optimizer, filename):
     try:

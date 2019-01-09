@@ -6,8 +6,6 @@ import torch.nn.functional as F
 
 import logging
 
-logger = logging.getLogger(__name__)
-
 def deep_iter(x):
     if isinstance(x, list) or isinstance(x, tuple):
         for u in x:
@@ -44,9 +42,9 @@ class EmbeddingLayer(nn.Module):
                 assert word not in word2id, "Duplicate words in pre-trained embeddings"
                 word2id[word] = len(word2id)
 
-            logger.info("{} pre-trained word embeddings loaded.".format(len(word2id)))
+            logging.info("{} pre-trained word embeddings loaded.".format(len(word2id)))
             if n_d != len(embvecs[0]):
-                logger.warn("n_d ({}) != word vector size ({}). Use {} for embeddings.".format(
+                logging.warn("n_d ({}) != word vector size ({}). Use {} for embeddings.".format(
                     n_d, len(embvecs[0]), len(embvecs[0])
                 ))
                 n_d = len(embvecs[0])
@@ -63,7 +61,7 @@ class EmbeddingLayer(nn.Module):
 
         self.word2id = word2id
         self.n_V, self.n_d = len(word2id), n_d
-        logger.info("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
+        logging.info("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
             self.n_V, len(embwords), self.n_V - len(embwords)))
         self.oovid = word2id[oov]
         self.padid = word2id[pad]
@@ -73,7 +71,7 @@ class EmbeddingLayer(nn.Module):
         if embs is not None:
             weight  = self.embedding.weight
             weight.data[:len(embwords)].copy_(torch.from_numpy(embvecs))
-            logger.info("embedding shape: {}".format(weight.size()))
+            logging.info("embedding shape: {}".format(weight.size()))
 
         if normalize:
             weight = self.embedding.weight
