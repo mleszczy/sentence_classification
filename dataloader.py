@@ -139,7 +139,7 @@ def cv_split2(data, labels, nfold, valid_id):
     train_x = [ x for i, x in enumerate(data) if i%nfold != valid_id ]
     train_y = [ y for i, y in enumerate(labels) if i%nfold != valid_id ]
     valid_x = [ x for i, x in enumerate(data) if i%nfold == valid_id ]
-    valid_y = [ y for i, y in enumerate(labels) if i%nfold == valid_id ]
+    valid_y = [ y for i, y in enumerate(labels) if i%nfold == valid_id ]   
     return train_x, train_y, valid_x, valid_y
 
 def pad(sequences, pad_token='<pad>', pad_left=True):

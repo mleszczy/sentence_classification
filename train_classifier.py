@@ -10,6 +10,8 @@ import hashlib
 
 import numpy as np
 import torch
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
@@ -200,6 +202,9 @@ def main(args):
             nfold = 10,
             test_id = args.cv
         )
+    if args.no_cv:
+        train_x = train_x + valid_x.copy()
+        train_y = train_y + valid_y.copy()
 
     nclasses = max(train_y)+1
 
@@ -250,8 +255,10 @@ def main(args):
     else: # enables deprecated use of naming
         tag = args.tag
 
-    pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
-    prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
+    # pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
+    # prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
+    pred_file = None
+    prob_file = None
 
     # Normal training
     if not args.snapshot:
@@ -322,10 +329,9 @@ def main(args):
         test_err
     ))
     logger.info("=" * 40)
+    return best_valid, test_err
 
-if __name__ == "__main__":
-    # Set logging
-
+def train_sentiment(cmdline_args):
     logging.basicConfig(format=FORMAT, stream=sys.stdout, level=logging.INFO)
 
     argparser = argparse.ArgumentParser(sys.argv[0], conflict_handler='resolve')
@@ -354,9 +360,11 @@ if __name__ == "__main__":
     argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
-    args = argparser.parse_args()
+    argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
+    print(cmdline_args)
+    args = argparser.parse_args(cmdline_args)
 
-    # # Dump git hash
+    # Dump git hash
     # h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
     # logger.info("Git hash: " + h)
 
@@ -381,4 +389,103 @@ if __name__ == "__main__":
     logger.info("CMD: python " +  " ".join(sys.argv))
     print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logger.info)
     # print (args)
-    main(args)
+    return main(args)
+
+
+def evaluate_sentiment(embed_path, data_path, tunelr=False, dataset="mr"):
+    if tunelr:
+        # TODO need to recover the full list
+        # lrs = [1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1e0, 1e1]
+        lrs = [1e-3, 1e-2]
+        results = {}
+        results['best-lr'] = 0
+        results['best-val-err'] = 1e10
+        results['best-test-err'] = 1e10
+        n_fold = 10
+        max_epoch = 1 # TODO update to 100
+        for lr in lrs:
+            err_valid_ave, err_test_ave = 0.0, 0.0
+            for cv_id in range(n_fold):
+                # TODO Jian, we need to change the file name
+                cmdlines = ["--dataset", dataset, 
+                            "--path", data_path + "/", 
+                            "--embedding", embed_path + "/glove.6B.100d.txt", 
+                            "--cv", str(cv_id),
+                            "--cnn", 
+                            "--max_epoch", str(max_epoch), 
+                            "--model_seed", str(cv_id), 
+                            "--data_seed", str(cv_id),
+                            "--lr", str(lr)]
+                err_valid, err_test = train_sentiment(cmdlines)
+                err_valid_ave += err_valid
+                err_test_ave += err_test
+                logger.info(str(cv_id + 1) \
+                    + " folds done with valid/test acc " \
+                    + str(err_valid_ave/(cv_id + 1)) + " / " + str(err_test_ave/(cv_id + 1)) )
+            err_valid_ave /= n_fold
+            err_test_ave /= n_fold
+            results[lr]= {"valid-err": err_valid_ave, "test-err": err_test_ave}
+            if err_valid_ave < results['best-val-err']:
+                results['best-lr'] = lr
+                results['best-val-err'] = err_valid_ave
+                results['best-test-err'] = err_test_ave                
+    else:
+        lr_dict = {'mr': 2e-2, 'subj': 1e-5, 'cr': 1e-4, 'mpqa': 1e-3, 'trec': 1e-2, 'sst': 1e-1}
+        lr = lr_dict[dataset]        
+        results = {}
+        n_fold = 10
+        max_epoch = 5 # TODO update max epoch
+        seed = 1 # TODO how to extract the seed
+        cmdlines = ["--dataset", dataset, 
+                    "--path", data_path + "/", 
+                    "--embedding", embed_path + "/glove.6B.100d.txt", 
+                    "--no_cv", 
+                    "--cnn", 
+                    "--max_epoch", str(max_epoch), 
+                    "--model_seed", str(seed), 
+                    "--data_seed", str(seed),
+                    "--lr", str(lr)]
+        err_valid, err_test = train_sentiment(cmdlines)
+        results["val-err"] = err_valid
+        results["test-err"] = err_test
+    return results
+
+
+if __name__ == "__main__":
+    # # test train_sentiment function
+    # cmdline_args = ["--dataset", "trec", "--path", "../sent-conv-torch/data/", "--embedding", "../../glove.6B.100d.txt", "--cv", "2", "--cnn"]
+    # cmdline_args = ["--dataset", "sst", "--path", "../sent-conv-torch/data/", "--embedding", "../../glove.6B.100d.txt", "--cv", "2", "--cnn", "--no_cv", "--max_epoch", "3", "--model_seed", "1", "--data_seed", "1"]
+    # print(train_sentiment(cmdline_args))
+    # # test train_sentiment eval function
+    # print("final res ", evaluate_sentiment(embed_path="./", 
+    #                    data_path="./third_party/sent-conv-torch/data/", 
+    #                    tunelr=True,
+    #                    dataset="trec"))
+    # confirm on the way to specify the embedding file name
+    # print("final res ", evaluate_sentiment(embed_path="../../", 
+    #                    data_path="../sent-conv-torch/data/", 
+    #                    tunelr=True,
+    #                    dataset="trec"))
+    # print("final res ", evaluate_sentiment(embed_path="../../", 
+    #                    data_path="../sent-conv-torch/data/", 
+    #                    tunelr=True,
+    #                    dataset="sst"))
+    # print("final res ", evaluate_sentiment(embed_path="../../", 
+    #                    data_path="../sent-conv-torch/data/", 
+    #                    tunelr=True,
+    #                    dataset="mr"))
+    # print("final res ", evaluate_sentiment(embed_path="../../", 
+    #                    data_path="../sent-conv-torch/data/", 
+    #                    tunelr=False,
+    #                    dataset="trec"))
+    # print("final res ", evaluate_sentiment(embed_path="../../", 
+    #                    data_path="../sent-conv-torch/data/", 
+    #                    tunelr=False,
+    #                    dataset="sst"))
+    print("final res ", evaluate_sentiment(embed_path="../../", 
+                       data_path="../sent-conv-torch/data/", 
+                       tunelr=False,
+                       dataset="mr"))
+
+
+    

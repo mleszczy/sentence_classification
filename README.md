@@ -15,6 +15,9 @@ Code used for sentence classification tasks.
           --path data_directory                 # path to the data directory
           --embedding google_word2vec.txt       # path to pre-trained embeddings
           --cv 0                                # 10-fold cross-validation, use split 0 as the test set
+
+    An example command for the: 
+    python train_classifier.py --dataset trec --path ../sent-conv-torch/data/ --embedding ../../glove.6B.100d.txt --cv 2 --cnn  --out ./test2 2>&1 | tee test2/run.log 
   ```
   
   - Check **run_sc.sh** for all more details.
