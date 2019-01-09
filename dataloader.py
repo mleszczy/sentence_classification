@@ -35,13 +35,22 @@ def clean_str(string, TREC=False):
 def read_corpus(path, clean=True, TREC=False):
     data = []
     labels = []
-    with open(path) as fin:
-        for line in fin:
-            label, sep, text = line.partition(' ')
-            label = int(label)
-            text = clean_str(text.strip()) if clean else text.strip()
-            labels.append(label)
-            data.append(text.split())
+    if sys.version_info[0] < 3:
+        with open(path) as fin:
+            for line in fin.readlines():
+                label, sep, text = line.partition(' ')
+                label = int(label)
+                text = clean_str(text.strip()) if clean else text.strip()
+                labels.append(label)
+                data.append(text.split())
+    else:
+        with open(path, "r", encoding="ISO-8859-1") as fin:
+            for line in fin.readlines():
+                label, sep, text = line.partition(' ')
+                label = int(label)
+                text = clean_str(text.strip()) if clean else text.strip()
+                labels.append(label)
+                data.append(text.split())
     return data, labels
 
 def read_MR(path, seed=1234):
@@ -49,7 +58,7 @@ def read_MR(path, seed=1234):
     data, labels = read_corpus(file_path)
     random.seed(seed)
     perm = range(len(data))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -59,7 +68,7 @@ def read_SUBJ(path, seed=1234):
     data, labels = read_corpus(file_path)
     random.seed(seed)
     perm = range(len(data))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -69,7 +78,7 @@ def read_CR(path, seed=1234):
     data, labels = read_corpus(file_path)
     random.seed(seed)
     perm = range(len(data))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -79,7 +88,7 @@ def read_MPQA(path, seed=1234):
     data, labels = read_corpus(file_path)
     random.seed(seed)
     perm = range(len(data))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -91,7 +100,7 @@ def read_TREC(path, seed=1234):
     test_x, test_y = read_corpus(test_path, TREC=True)
     random.seed(seed)
     perm = range(len(train_x))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     train_x = [ train_x[i] for i in perm ]
     train_y = [ train_y[i] for i in perm ]
     return train_x, train_y, test_x, test_y
@@ -105,7 +114,7 @@ def read_SST(path, seed=1234):
     test_x, test_y = read_corpus(test_path, False)
     random.seed(seed)
     perm = range(len(train_x))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     train_x = [ train_x[i] for i in perm ]
     train_y = [ train_y[i] for i in perm ]
     return train_x, train_y, valid_x, valid_y, test_x, test_y
@@ -117,7 +126,7 @@ def cv_split(data, labels, nfold, test_id):
     test_x = [ x for i, x in enumerate(data) if i%nfold == test_id ]
     test_y = [ y for i, y in enumerate(labels) if i%nfold == test_id ]
     perm = range(len(lst_x))
-    random.shuffle(perm)
+    random.shuffle(list(perm))
     M = int(len(lst_x)*0.9)
     train_x = [ lst_x[i] for i in perm[:M] ]
     train_y = [ lst_y[i] for i in perm[:M] ]
@@ -179,7 +188,7 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
 
     if sort:
         perm = range(nbatch)
-        random.shuffle(perm)
+        random.shuffle(list(perm))
         batches_x = [ batches_x[i] for i in perm ]
         batches_y = [ batches_y[i] for i in perm ]
 

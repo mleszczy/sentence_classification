@@ -82,7 +82,7 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
         loss = criterion(output, y)
         total_loss += loss.data[0]*x.size(1)
         pred = output.data.max(1)[1]
-        correct += pred.eq(y.data).cpu().sum().item()
+        correct += pred.eq(y.data).cpu().sum()
         cnt += y.numel()
         preds += pred.cpu().numpy().tolist()
         probs += output.data.cpu().numpy().tolist()
@@ -356,9 +356,9 @@ if __name__ == "__main__":
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
     args = argparser.parse_args()
 
-    # Dump git hash
-    h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
-    logger.info("Git hash: " + h)
+    # # Dump git hash
+    # h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
+    # logger.info("Git hash: " + h)
 
     # Dump embedding hash
     if args.embedding:
