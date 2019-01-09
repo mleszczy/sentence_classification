@@ -57,8 +57,8 @@ def read_MR(path, seed=1234):
     file_path = os.path.join(path, "rt-polarity.all")
     data, labels = read_corpus(file_path)
     random.seed(seed)
-    perm = range(len(data))
-    random.shuffle(list(perm))
+    perm = list(range(len(data)))
+    random.shuffle(perm)
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -67,8 +67,8 @@ def read_SUBJ(path, seed=1234):
     file_path = os.path.join(path, "subj.all")
     data, labels = read_corpus(file_path)
     random.seed(seed)
-    perm = range(len(data))
-    random.shuffle(list(perm))
+    perm = list(range(len(data)))
+    random.shuffle(perm)
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -77,8 +77,8 @@ def read_CR(path, seed=1234):
     file_path = os.path.join(path, "custrev.all")
     data, labels = read_corpus(file_path)
     random.seed(seed)
-    perm = range(len(data))
-    random.shuffle(list(perm))
+    perm = list(range(len(data)))
+    random.shuffle(perm)
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -87,8 +87,8 @@ def read_MPQA(path, seed=1234):
     file_path = os.path.join(path, "mpqa.all")
     data, labels = read_corpus(file_path)
     random.seed(seed)
-    perm = range(len(data))
-    random.shuffle(list(perm))
+    perm = list(range(len(data)))
+    random.shuffle(perm)
     data = [ data[i] for i in perm ]
     labels = [ labels[i] for i in perm ]
     return data, labels
@@ -99,8 +99,8 @@ def read_TREC(path, seed=1234):
     train_x, train_y = read_corpus(train_path, TREC=True)
     test_x, test_y = read_corpus(test_path, TREC=True)
     random.seed(seed)
-    perm = range(len(train_x))
-    random.shuffle(list(perm))
+    perm = list(range(len(train_x)))
+    random.shuffle(perm)
     train_x = [ train_x[i] for i in perm ]
     train_y = [ train_y[i] for i in perm ]
     return train_x, train_y, test_x, test_y
@@ -113,8 +113,8 @@ def read_SST(path, seed=1234):
     valid_x, valid_y = read_corpus(valid_path, False)
     test_x, test_y = read_corpus(test_path, False)
     random.seed(seed)
-    perm = range(len(train_x))
-    random.shuffle(list(perm))
+    perm = list(range(len(train_x)))
+    random.shuffle(perm)
     train_x = [ train_x[i] for i in perm ]
     train_y = [ train_y[i] for i in perm ]
     return train_x, train_y, valid_x, valid_y, test_x, test_y
@@ -125,8 +125,8 @@ def cv_split(data, labels, nfold, test_id):
     lst_y = [ y for i, y in enumerate(labels) if i%nfold != test_id ]
     test_x = [ x for i, x in enumerate(data) if i%nfold == test_id ]
     test_y = [ y for i, y in enumerate(labels) if i%nfold == test_id ]
-    perm = range(len(lst_x))
-    random.shuffle(list(perm))
+    perm = list(range(len(lst_x)))
+    random.shuffle(perm)
     M = int(len(lst_x)*0.9)
     train_x = [ lst_x[i] for i in perm[:M] ]
     train_y = [ lst_y[i] for i in perm[:M] ]
@@ -187,8 +187,8 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
         batches_y.append(by)
 
     if sort:
-        perm = range(nbatch)
-        random.shuffle(list(perm))
+        perm = list(range(nbatch))
+        random.shuffle(perm)
         batches_x = [ batches_x[i] for i in perm ]
         batches_y = [ batches_y[i] for i in perm ]
 

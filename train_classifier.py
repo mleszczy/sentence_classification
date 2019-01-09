@@ -485,7 +485,7 @@ if __name__ == "__main__":
     print("final res ", evaluate_sentiment(embed_path="../../", 
                        data_path="../sent-conv-torch/data/", 
                        tunelr=False,
-                       dataset="mr"))
+                       dataset="mpqa"))
 
 
     
