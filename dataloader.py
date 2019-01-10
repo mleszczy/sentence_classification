@@ -67,24 +67,35 @@ def load_embedding_npz(path):
     data = np.load(path)
     return [ str(w) for w in data['words'] ], data['vals']
 
+# TODO: This is largely copy-pasted from utils.py. One file should import from the other.
 def load_embedding_txt(path, word_dict):
-    file_open = gzip.open if path.endswith(".gz") else open
-    words = [ ]
-    vals = [ ]
-    with file_open(path) as fin:
-        fin.readline()
-        for line in fin:
-            line = line.strip()
-            if line:
-                parts = line.split()
-                if len(parts) == 2:
-                    logging.info("Skipping meta in embedding file.")
-                    continue
-                if word_dict is not None and parts[0] not in word_dict:
-                    continue
-                words.append(parts[0])
-                vals += [ float(x) for x in parts[1:] ]
-    return words, np.asarray(vals).reshape(len(words),-1)
+    """
+    Loads a GloVe or FastText format embedding at specified path. Returns a
+    vector of strings that represents the vocabulary and a 2-D numpy matrix that
+    is the embeddings.
+    """
+    logging.info('Beginning to load embeddings')
+    with open(path, 'r', encoding='utf8') as f:
+        lines = f.readlines()
+        wordlist = []
+        embeddings = []
+        if is_fasttext_format(lines): lines = lines[1:]
+        for line in lines:
+            row = line.strip('\n').split(' ')
+            word = row.pop(0)
+            if word_dict is not None and word not in word_dict:
+                continue
+            wordlist.append(word)
+            embeddings.append([float(i) for i in row])
+        embeddings = np.array(embeddings)
+    assert len(wordlist) == embeddings.shape[0], 'Embedding dim must match wordlist length.'
+    logging.info('Finished loading embeddings')
+    return wordlist, embeddings
+
+# TODO: This is copy-pasted from utils.py. One file should import from the other.
+def is_fasttext_format(lines):
+    first_line = lines[0].strip('\n').split(' ')
+    return len(first_line) == 2 and first_line[0].isdigit() and first_line[1].isdigit()
 
 def load_embedding_pkl(path):
     return pickle.load(open(path, "rb"))
