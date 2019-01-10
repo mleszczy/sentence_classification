@@ -9,136 +9,6 @@ import torch
 import pickle
 import logging
 
-def clean_str(string, TREC=False):
-    """
-    Tokenization/string cleaning for all datasets except for SST.
-    Every dataset is lower cased except for TREC
-    """
-    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
-    string = re.sub(r"\'s", " \'s", string)
-    string = re.sub(r"\'ve", " \'ve", string)
-    string = re.sub(r"n\'t", " n\'t", string)
-    string = re.sub(r"\'re", " \'re", string)
-    string = re.sub(r"\'d", " \'d", string)
-    string = re.sub(r"\'ll", " \'ll", string)
-    string = re.sub(r",", " , ", string)
-    string = re.sub(r"!", " ! ", string)
-    string = re.sub(r"\(", " \( ", string)
-    string = re.sub(r"\)", " \) ", string)
-    string = re.sub(r"\?", " \? ", string)
-    string = re.sub(r"\s{2,}", " ", string)
-    return string.strip() if TREC else string.strip().lower()
-
-def read_corpus(path, clean=True, TREC=False):
-    data = []
-    labels = []
-    if sys.version_info[0] < 3:
-        with open(path) as fin:
-            for line in fin.readlines():
-                label, sep, text = line.partition(' ')
-                label = int(label)
-                text = clean_str(text.strip()) if clean else text.strip()
-                labels.append(label)
-                data.append(text.split())
-    else:
-        with open(path, "r", encoding="ISO-8859-1") as fin:
-            for line in fin.readlines():
-                label, sep, text = line.partition(' ')
-                label = int(label)
-                text = clean_str(text.strip()) if clean else text.strip()
-                labels.append(label)
-                data.append(text.split())
-    return data, labels
-
-def read_MR(path, seed=1234):
-    file_path = os.path.join(path, "rt-polarity.all")
-    data, labels = read_corpus(file_path)
-    random.seed(seed)
-    perm = list(range(len(data)))
-    random.shuffle(perm)
-    data = [ data[i] for i in perm ]
-    labels = [ labels[i] for i in perm ]
-    return data, labels
-
-def read_SUBJ(path, seed=1234):
-    file_path = os.path.join(path, "subj.all")
-    data, labels = read_corpus(file_path)
-    random.seed(seed)
-    perm = list(range(len(data)))
-    random.shuffle(perm)
-    data = [ data[i] for i in perm ]
-    labels = [ labels[i] for i in perm ]
-    return data, labels
-
-def read_CR(path, seed=1234):
-    file_path = os.path.join(path, "custrev.all")
-    data, labels = read_corpus(file_path)
-    random.seed(seed)
-    perm = list(range(len(data)))
-    random.shuffle(perm)
-    data = [ data[i] for i in perm ]
-    labels = [ labels[i] for i in perm ]
-    return data, labels
-
-def read_MPQA(path, seed=1234):
-    file_path = os.path.join(path, "mpqa.all")
-    data, labels = read_corpus(file_path)
-    random.seed(seed)
-    perm = list(range(len(data)))
-    random.shuffle(perm)
-    data = [ data[i] for i in perm ]
-    labels = [ labels[i] for i in perm ]
-    return data, labels
-
-def read_TREC(path, seed=1234):
-    train_path = os.path.join(path, "TREC.train.all")
-    test_path = os.path.join(path, "TREC.test.all")
-    train_x, train_y = read_corpus(train_path, TREC=True)
-    test_x, test_y = read_corpus(test_path, TREC=True)
-    random.seed(seed)
-    perm = list(range(len(train_x)))
-    random.shuffle(perm)
-    train_x = [ train_x[i] for i in perm ]
-    train_y = [ train_y[i] for i in perm ]
-    return train_x, train_y, test_x, test_y
-
-def read_SST(path, seed=1234):
-    train_path = os.path.join(path, "stsa.binary.phrases.train")
-    valid_path = os.path.join(path, "stsa.binary.dev")
-    test_path = os.path.join(path, "stsa.binary.test")
-    train_x, train_y = read_corpus(train_path, False)
-    valid_x, valid_y = read_corpus(valid_path, False)
-    test_x, test_y = read_corpus(test_path, False)
-    random.seed(seed)
-    perm = list(range(len(train_x)))
-    random.shuffle(perm)
-    train_x = [ train_x[i] for i in perm ]
-    train_y = [ train_y[i] for i in perm ]
-    return train_x, train_y, valid_x, valid_y, test_x, test_y
-
-def cv_split(data, labels, nfold, test_id):
-    assert (nfold > 1) and (test_id >= 0) and (test_id < nfold)
-    lst_x = [ x for i, x in enumerate(data) if i%nfold != test_id ]
-    lst_y = [ y for i, y in enumerate(labels) if i%nfold != test_id ]
-    test_x = [ x for i, x in enumerate(data) if i%nfold == test_id ]
-    test_y = [ y for i, y in enumerate(labels) if i%nfold == test_id ]
-    perm = list(range(len(lst_x)))
-    random.shuffle(perm)
-    M = int(len(lst_x)*0.9)
-    train_x = [ lst_x[i] for i in perm[:M] ]
-    train_y = [ lst_y[i] for i in perm[:M] ]
-    valid_x = [ lst_x[i] for i in perm[M:] ]
-    valid_y = [ lst_y[i] for i in perm[M:] ]
-    return train_x, train_y, valid_x, valid_y, test_x, test_y
-
-def cv_split2(data, labels, nfold, valid_id):
-    assert (nfold > 1) and (valid_id >= 0) and (valid_id < nfold)
-    train_x = [ x for i, x in enumerate(data) if i%nfold != valid_id ]
-    train_y = [ y for i, y in enumerate(labels) if i%nfold != valid_id ]
-    valid_x = [ x for i, x in enumerate(data) if i%nfold == valid_id ]
-    valid_y = [ y for i, y in enumerate(labels) if i%nfold == valid_id ]   
-    return train_x, train_y, valid_x, valid_y
-
 def pad(sequences, pad_token='<pad>', pad_left=True):
     ''' input sequences is a list of text sequence [[str]]
         pad each text sequence to the length of the longest
@@ -147,7 +17,6 @@ def pad(sequences, pad_token='<pad>', pad_left=True):
     if pad_left:
         return [ [pad_token]*(max_len-len(seq)) + seq for seq in sequences ]
     return [ seq + [pad_token]*(max_len-len(seq)) for seq in sequences ]
-
 
 def create_one_batch(x, y, map2id, oov='<oov>'):
     oov_id = map2id[oov]
@@ -158,7 +27,6 @@ def create_one_batch(x, y, map2id, oov='<oov>'):
     x = torch.LongTensor(x)
     assert x.size(0) == length*batch_size
     return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
-
 
 # shuffle training examples and create mini-batches
 def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
@@ -195,7 +63,6 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
 
     return batches_x, batches_y
 
-
 def load_embedding_npz(path):
     data = np.load(path)
     return [ str(w) for w in data['words'] ], data['vals']
@@ -229,3 +96,209 @@ def load_embedding(path, word_dict=None):
         return load_embedding_pkl(path)
     else:
         return load_embedding_txt(path, word_dict)
+
+def clean_str(string, TREC=False):
+    """
+    Tokenization/string cleaning for all datasets except for SST.
+    Every dataset is lower cased except for TREC
+    """
+    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
+    string = re.sub(r"\'s", " \'s", string)
+    string = re.sub(r"\'ve", " \'ve", string)
+    string = re.sub(r"n\'t", " n\'t", string)
+    string = re.sub(r"\'re", " \'re", string)
+    string = re.sub(r"\'d", " \'d", string)
+    string = re.sub(r"\'ll", " \'ll", string)
+    string = re.sub(r",", " , ", string)
+    string = re.sub(r"!", " ! ", string)
+    string = re.sub(r"\(", " \( ", string)
+    string = re.sub(r"\)", " \) ", string)
+    string = re.sub(r"\?", " \? ", string)
+    string = re.sub(r"\s{2,}", " ", string)
+    return string.strip() if TREC else string.strip().lower()
+
+def split_and_save_dataset(dataset, input_data_dir, output_data_dir):
+    train_x, train_y, valid_x, valid_y, test_x, test_y = split_dataset(dataset, input_data_dir)
+    write_split_dataset(output_data_dir, train_x, train_y, valid_x, valid_y, test_x, test_y)
+
+def split_dataset(dataset, data_dir):
+    filenames = {
+        'mr':'rt-polarity.all',
+        'subj':'subj.all',
+        'cr':'custrev.all',
+        'sst':['stsa.binary.phrases.train','stsa.binary.dev','stsa.binary.test'],
+        'trec':['TREC.train.all','TREC.test.all'],
+        'mpqa':'mpqa.all'
+    }
+    if dataset == 'sst':
+        dataset_paths = [os.path.join(data_dir, filenames[dataset][i]) for i in range(3)]
+        train_x, train_y = read_dataset(dataset_paths[0], clean=False)
+        valid_x, valid_y = read_dataset(dataset_paths[1], clean=False)
+        test_x, test_y = read_dataset(dataset_paths[2], clean=False)
+    else:
+        if dataset == 'trec':
+            dataset_paths = [os.path.join(data_dir, filenames[dataset][i]) for i in range(2)]
+            train_valid_x, train_valid_y = read_dataset(dataset_paths[0], TREC=True)
+            test_x, test_y = read_dataset(dataset_paths[1], TREC=True)
+        else:
+            assert dataset in ['mr','subj','cr','mpqa']
+            dataset_path = os.path.join(data_dir, filenames[dataset])
+            data, labels = read_dataset(dataset_path)
+            train_valid_x, train_valid_y, test_x, test_y = random_split(data, labels)
+        train_x, train_y, valid_x, valid_y = random_split(train_valid_x, train_valid_y)
+    return train_x, train_y, valid_x, valid_y, test_x, test_y
+
+def random_split(data, labels, frac_split=0.9):
+    perm = list(range(len(labels)))
+    random.shuffle(perm)
+    M = int(len(labels) * frac_split)
+    split1_x = [ data[i] for i in perm[:M] ]
+    split1_y = [ labels[i] for i in perm[:M] ]
+    split2_x = [ data[i] for i in perm[M:] ]
+    split2_y = [ labels[i] for i in perm[M:] ]
+    return split1_x, split1_y, split2_x, split2_y
+
+def read_dataset(path, clean=True, TREC=False):
+    data = []
+    labels = []
+    if sys.version_info[0] < 3:
+        with open(path) as fin:
+            for line in fin.readlines():
+                label, sep, text = line.partition(' ')
+                label = int(label)
+                text = clean_str(text.strip(), TREC=TREC) if clean else text.strip()
+                labels.append(label)
+                data.append(text.split())
+    else:
+        with open(path, "r", encoding="ISO-8859-1") as fin:
+            for line in fin.readlines():
+                label, sep, text = line.partition(' ')
+                label = int(label)
+                text = clean_str(text.strip(), TREC=TREC) if clean else text.strip()
+                labels.append(label)
+                data.append(text.split())
+    return data, labels
+
+def write_dataset(path, data, labels):
+    assert len(data) == len(labels)
+    with open(path, 'w', encoding='ISO-8859-1') as f:
+        for i in range(len(data)):
+            f.write('{} {}\n'.format(labels[i], ' '.join(data[i])))
+
+def read_split_dataset(data_dir, dataset):
+    data_split_strs = ['train','heldout','test']
+    data_list = [0]*3
+    label_list = [0]*3
+    for i in range(len(data_split_strs)):
+        filename = '{}.{}.txt'.format(dataset, data_split_strs[i])
+        dataset_path = os.path.join(data_dir, filename)
+        # no need to clean, because we already did this before writing the files.
+        data_list[i], label_list[i] = read_dataset(dataset_path, clean=False)
+    return data_list[0], label_list[0], data_list[1], label_list[1],data_list[2], label_list[2]
+
+def write_split_dataset(data_dir, train_x, train_y, valid_x, valid_y, test_x, test_y):
+    data_split_strs = ['train','heldout','test']
+    data = [train_x, valid_x, test_x]
+    labels = [train_y, valid_y, test_y]
+    for i in range(len(data_split_strs)):
+        filename = '{}.{}.txt'.format(dataset, data_split_strs[i])
+        output_dataset_path = os.path.join(data_dir, filename)
+        write_dataset(output_dataset_path, data[i], labels[i])
+
+if __name__ == '__main__':
+    random.seed(1)
+    datasets = ['mr','subj','cr','sst','trec','mpqa']
+    input_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sent-conv-torch\\data'
+    output_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sentence_classification\\data'
+    for dataset in datasets:
+        split_and_save_dataset(dataset, input_data_dir, output_data_dir)
+
+
+# def read_MR(path, seed=1234):
+#     file_path = os.path.join(path, "rt-polarity.all")
+#     data, labels = read_dataset(file_path)
+#     random.seed(seed)
+#     perm = list(range(len(data)))
+#     random.shuffle(perm)
+#     data = [ data[i] for i in perm ]
+#     labels = [ labels[i] for i in perm ]
+#     return data, labels
+
+# def read_SUBJ(path, seed=1234):
+#     file_path = os.path.join(path, "subj.all")
+#     data, labels = read_dataset(file_path)
+#     random.seed(seed)
+#     perm = list(range(len(data)))
+#     random.shuffle(perm)
+#     data = [ data[i] for i in perm ]
+#     labels = [ labels[i] for i in perm ]
+#     return data, labels
+
+# def read_CR(path, seed=1234):
+#     file_path = os.path.join(path, "custrev.all")
+#     data, labels = read_dataset(file_path)
+#     random.seed(seed)
+#     perm = list(range(len(data)))
+#     random.shuffle(perm)
+#     data = [ data[i] for i in perm ]
+#     labels = [ labels[i] for i in perm ]
+#     return data, labels
+
+# def read_MPQA(path, seed=1234):
+#     file_path = os.path.join(path, "mpqa.all")
+#     data, labels = read_dataset(file_path)
+#     random.seed(seed)
+#     perm = list(range(len(data)))
+#     random.shuffle(perm)
+#     data = [ data[i] for i in perm ]
+#     labels = [ labels[i] for i in perm ]
+#     return data, labels
+
+# def read_TREC(path, seed=1234):
+#     train_path = os.path.join(path, "TREC.train.all")
+#     test_path = os.path.join(path, "TREC.test.all")
+#     train_x, train_y = read_dataset(train_path, TREC=True)
+#     test_x, test_y = read_dataset(test_path, TREC=True)
+#     random.seed(seed)
+#     perm = list(range(len(train_x)))
+#     random.shuffle(perm)
+#     train_x = [ train_x[i] for i in perm ]
+#     train_y = [ train_y[i] for i in perm ]
+#     return train_x, train_y, test_x, test_y
+
+# def read_SST(path, seed=1234):
+#     train_path = os.path.join(path, "stsa.binary.phrases.train")
+#     valid_path = os.path.join(path, "stsa.binary.dev")
+#     test_path = os.path.join(path, "stsa.binary.test")
+#     train_x, train_y = read_dataset(train_path, False)
+#     valid_x, valid_y = read_dataset(valid_path, False)
+#     test_x, test_y = read_dataset(test_path, False)
+#     random.seed(seed)
+#     perm = list(range(len(train_x)))
+#     random.shuffle(perm)
+#     train_x = [ train_x[i] for i in perm ]
+#     train_y = [ train_y[i] for i in perm ]
+#     return train_x, train_y, valid_x, valid_y, test_x, test_y
+
+# def cv_split(data, labels, nfold, test_id):
+#     assert (nfold > 1) and (test_id >= 0) and (test_id < nfold)
+#     lst_x = [ x for i, x in enumerate(data) if i%nfold != test_id ]
+#     lst_y = [ y for i, y in enumerate(labels) if i%nfold != test_id ]
+#     test_x = [ x for i, x in enumerate(data) if i%nfold == test_id ]
+#     test_y = [ y for i, y in enumerate(labels) if i%nfold == test_id ]
+#     perm = list(range(len(lst_x)))
+#     random.shuffle(perm)
+#     M = int(len(lst_x)*0.9)
+#     train_x = [ lst_x[i] for i in perm[:M] ]
+#     train_y = [ lst_y[i] for i in perm[:M] ]
+#     valid_x = [ lst_x[i] for i in perm[M:] ]
+#     valid_y = [ lst_y[i] for i in perm[M:] ]
+#     return train_x, train_y, valid_x, valid_y, test_x, test_y
+
+# def cv_split2(data, labels, nfold, valid_id):
+#     assert (nfold > 1) and (valid_id >= 0) and (valid_id < nfold)
+#     train_x = [ x for i, x in enumerate(data) if i%nfold != valid_id ]
+#     train_y = [ y for i, y in enumerate(labels) if i%nfold != valid_id ]
+#     valid_x = [ x for i, x in enumerate(data) if i%nfold == valid_id ]
+#     valid_y = [ y for i, y in enumerate(labels) if i%nfold == valid_id ]
+#     return train_x, train_y, valid_x, valid_y

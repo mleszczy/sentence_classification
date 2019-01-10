@@ -144,24 +144,8 @@ def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
     return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
 
 def main(args):
-    if args.dataset == 'mr':
-        data, label = dataloader.read_MR(args.path, seed=args.data_seed)
-    elif args.dataset == 'subj':
-        data, label = dataloader.read_SUBJ(args.path, seed=args.data_seed)
-    elif args.dataset == 'cr':
-        data, label = dataloader.read_CR(args.path, seed=args.data_seed)
-    elif args.dataset == 'mpqa':
-        data, label = dataloader.read_MPQA(args.path, seed=args.data_seed)
-    elif args.dataset == 'trec':
-        train_x, train_y, test_x, test_y = dataloader.read_TREC(args.path, seed=args.data_seed)
-        data = train_x + test_x
-        label = None
-    elif args.dataset == 'sst':
-        train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_SST(args.path, seed=args.data_seed)
-        data = train_x + valid_x + test_x
-        label = None
-    else:
-        raise Exception("unknown dataset: {}".format(args.dataset))
+    train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset)
+    data = train_x + valid_x + test_x
 
     if args.embedding:
         logging.info("Using single embedding file.")
@@ -188,22 +172,6 @@ def main(args):
         raise ValueError("Need to provide embedding or list of embeddings.")
 
     orig_emb_layer = emb_layer
-
-    if args.dataset == 'trec':
-        train_x, train_y, valid_x, valid_y = dataloader.cv_split2(
-            train_x, train_y,
-            nfold = 10,
-            valid_id = args.cv
-        )
-    elif args.dataset != 'sst':
-        train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.cv_split(
-            data, label,
-            nfold = 10,
-            test_id = args.cv
-        )
-    if args.no_cv:
-        train_x = train_x + valid_x.copy()
-        train_y = train_y + valid_y.copy()
 
     nclasses = max(train_y)+1
 
@@ -243,14 +211,14 @@ def main(args):
 
     if not args.tag:
         if args.cnn:
-            tag = "model_cnn_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-                cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+            tag = "model_cnn_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
         elif args.la:
-             tag = "model_la_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-                cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+             tag = "model_la_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
         elif args.lstm:
-            tag = "model_lstm_cv_{cv}_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-                cv=args.cv, dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+            tag = "model_lstm_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
     else: # enables deprecated use of naming
         tag = args.tag
 
@@ -346,7 +314,7 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--depth", type=int, default=2)
     argparser.add_argument("--lr", type=float, default=0.001)
     argparser.add_argument("--lr_decay", type=float, default=0.0)
-    argparser.add_argument("--cv", type=int, default=0)
+    # argparser.add_argument("--cv", type=int, default=0)
     argparser.add_argument("--model_seed", type=int, default=1234)
     argparser.add_argument("--data_seed", type=int, default=1234)
     argparser.add_argument("--save_mdl", type=str, default=None, help="Save model to this file.")
@@ -357,7 +325,7 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
-    argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
+    # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)
 
@@ -387,7 +355,3 @@ def train_sentiment(cmdline_args):
     print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logging.info)
     # print (args)
     return main(args)
-
-
-
-    
