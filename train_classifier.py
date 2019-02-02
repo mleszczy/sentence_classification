@@ -81,10 +81,14 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
         x, y = Variable(x, volatile=True), Variable(y)
         output = model(x)
         loss = criterion(output, y)
-        total_loss += loss.data[0]*x.size(1)
+        if torch.__version__ >= '0.4':
+            total_loss += loss.data*x.size(1)
+        else:
+            total_loss += loss.data[0]*x.size(1)
         pred = output.data.max(1)[1]
         correct += pred.eq(y.data).cpu().sum()
         cnt += y.numel()
+
         preds += pred.cpu().numpy().tolist()
         probs += output.data.cpu().numpy().tolist()
 
@@ -97,7 +101,11 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
             pickle.dump(probs, outfile)
 
     model.train()
-    return 1.0-correct/cnt
+    if torch.__version__ >= '0.4':
+        return 1.0-float(correct)/float(cnt)
+    else:
+        return 1.0-correct/cnt
+
 
 def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
@@ -125,12 +133,20 @@ def train_model(epoch, model, optimizer,
 
     valid_err = eval_model(model, valid_x, valid_y)
 
-    logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
-        epoch, niter,
-        optimizer.param_groups[0]['lr'],
-        loss.data[0],
-        valid_err
-    ))
+    if torch.__version__ >= "0.4":
+        logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
+            epoch, niter,
+            optimizer.param_groups[0]['lr'],
+            loss.data,
+            valid_err
+        ))
+    else:
+        logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
+            epoch, niter,
+            optimizer.param_groups[0]['lr'],
+            loss.data[0],
+            valid_err
+        ))
 
     if valid_err < best_valid:
         best_valid = valid_err
