@@ -36,6 +36,7 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
     # sort sequences based on their length; necessary for SST
     if sort:
         lst = sorted(lst, key=lambda i: len(x[i]))
+        logging.info("minibatches are length sorted")
 
     x = [ x[i] for i in lst ]
     y = [ y[i] for i in lst ]

@@ -190,6 +190,7 @@ def main(args):
     orig_emb_layer = emb_layer
 
     nclasses = max(train_y)+1
+    logging.info(str(nclasses) + " classes in total")
 
     train_x, train_y = dataloader.create_batches(
         train_x, train_y,
