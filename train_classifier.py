@@ -195,19 +195,22 @@ def main(args):
         train_x, train_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = args.dataset == 'sst'
+        sort = 'sst' in args.dataset
+        # sort = args.dataset == 'sst'
     )
     valid_x, valid_y = dataloader.create_batches(
         valid_x, valid_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = args.dataset == 'sst'
+        sort = 'sst' in args.dataset
+        # sort = args.dataset == 'sst'
     )
     test_x, test_y = dataloader.create_batches(
         test_x, test_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = args.dataset == 'sst'
+        sort = 'sst' in args.dataset
+        # sort = args.dataset == 'sst'
     )
 
     if args.load_mdl is None:

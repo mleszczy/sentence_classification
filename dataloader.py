@@ -138,10 +138,11 @@ def split_dataset(dataset, data_dir):
         'subj':'subj.all',
         'cr':'custrev.all',
         'sst':['stsa.binary.phrases.train','stsa.binary.dev','stsa.binary.test'],
+        'sst1':['stsa.fine.phrases.train','stsa.fine.dev','stsa.fine.test'],
         'trec':['TREC.train.all','TREC.test.all'],
         'mpqa':'mpqa.all'
     }
-    if dataset == 'sst':
+    if dataset == 'sst' or dataset == 'sst1':
         dataset_paths = [os.path.join(data_dir, filenames[dataset][i]) for i in range(3)]
         train_x, train_y = read_dataset(dataset_paths[0], clean=False)
         valid_x, valid_y = read_dataset(dataset_paths[1], clean=False)
@@ -218,9 +219,12 @@ def write_split_dataset(data_dir, train_x, train_y, valid_x, valid_y, test_x, te
 
 if __name__ == '__main__':
     random.seed(1)
-    datasets = ['mr','subj','cr','sst','trec','mpqa']
-    input_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sent-conv-torch\\data'
-    output_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sentence_classification\\data'
+    # datasets = ['mr','subj','cr','sst','trec','mpqa']
+    datasets = ['sst1']
+    input_data_dir = '/Users/Jian/Data/research/smallfry/src/smallfry/third_party/sent-conv-torch/data'
+    output_data_dir = '/Users/Jian/Data/research/smallfry/src/smallfry/third_party/sentence_classification/data'
+    # input_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sent-conv-torch\\data'
+    # output_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sentence_classification\\data'
     for dataset in datasets:
         split_and_save_dataset(dataset, input_data_dir, output_data_dir)
 
