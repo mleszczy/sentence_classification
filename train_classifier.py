@@ -24,6 +24,8 @@ import modules
 from sentutils import *
 sys.path.remove(os.path.dirname(__file__))
 import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 FORMAT = '%(levelname)s|%(asctime)s|%(name)s|line_num:%(lineno)d| %(message)s'
 
@@ -33,6 +35,7 @@ class Model(nn.Module):
         self.args = args
         self.drop = nn.Dropout(args.dropout)
         self.emb_layer = emb_layer
+        print(emb_layer.n_d)
         if args.cnn:
             self.encoder = modules.CNN_Text(
                 emb_layer.n_d,
@@ -68,7 +71,7 @@ class Model(nn.Module):
             output = self.drop(output)
         return self.out(output)
 
-def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
+def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None, sentence_emb_file=None, gold_file=None):
     model.eval()
     N = len(valid_x)
     criterion = nn.CrossEntropyLoss()
@@ -77,6 +80,18 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     total_loss = 0.0
     preds = []
     probs = []
+
+    if sentence_emb_file is not None:
+        sentence_embs = []
+        def hook(module, input, output):
+            sentence_emb = output.sum(dim=0) / output.size()[0]
+            sentence_embs.append(sentence_emb)
+
+        for name, module in model.named_modules():
+            if 'emb_layer.embedding' in name:
+                handle = module.register_forward_hook(hook)
+
+    gold = []
     for x, y in zip(valid_x, valid_y):
         x, y = Variable(x, volatile=True), Variable(y)
         output = model(x)
@@ -87,6 +102,7 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
             total_loss += loss.data[0]*x.size(1)
         pred = output.data.max(1)[1]
         correct += pred.eq(y.data).cpu().sum()
+        gold.append(y.data.cpu())
         cnt += y.numel()
 
         preds += pred.cpu().numpy().tolist()
@@ -97,9 +113,17 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
             pickle.dump(preds, outfile)
 
     if prob_file is not None:
-         with open(prob_file, 'wb') as outfile:
+        with open(prob_file, 'wb') as outfile:
             pickle.dump(probs, outfile)
 
+    if sentence_emb_file is not None:
+        with open(sentence_emb_file, 'wb') as outfile:
+            pickle.dump(sentence_embs, outfile)
+        with open(gold_file, 'wb') as outfile:
+            pickle.dump(gold, outfile)
+
+    if sentence_emb_file is not None:
+        handle.remove()
     model.train()
     if torch.__version__ >= '0.4':
         return 1.0-float(correct)/float(cnt)
@@ -134,14 +158,14 @@ def train_model(epoch, model, optimizer,
     valid_err = eval_model(model, valid_x, valid_y)
 
     if torch.__version__ >= "0.4":
-        logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
+        logger.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
             epoch, niter,
             optimizer.param_groups[0]['lr'],
             loss.data,
             valid_err
         ))
     else:
-        logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
+        logger.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
             epoch, niter,
             optimizer.param_groups[0]['lr'],
             loss.data[0],
@@ -154,6 +178,7 @@ def train_model(epoch, model, optimizer,
         # Save model
         if save_mdl is not None:
             torch.save(model, save_mdl)
+
     return best_valid, test_err
 
 def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
@@ -164,20 +189,22 @@ def main(args):
     data = train_x + valid_x + test_x
 
     if args.embedding:
-        logging.info("Using single embedding file.")
+        logger.info("Using single embedding file.")
         emb_layer = modules.EmbeddingLayer(
             args.d, data,
             embs = dataloader.load_embedding(args.embedding),
-            normalize=not args.no_normalize
+            normalize=not args.no_normalize,
+            num_pad=args.num_pad,
+            project_dim=args.project_dim
         )
     elif args.embedding_list:
-        logging.info("Using embedding list.")
+        logger.info("Using embedding list.")
         embedding_list = []
         with open(args.embedding_list, 'r') as f:
             lines = f.readlines()
             assert len(lines) >= args.cycles
             for i, emb in enumerate(lines):
-                logging.info("Embedding file: {embfile}".format(embfile=emb.strip()))
+                logger.info("Embedding file: {embfile}".format(embfile=emb.strip()))
                 embedding_list.append(modules.EmbeddingLayer(
                                     args.d, data,
                                     embs = dataloader.load_embedding(emb.strip()),
@@ -185,32 +212,40 @@ def main(args):
         emb_layer = embedding_list[0]
         print("Embedding list length", len(embedding_list))
     else:
-        raise ValueError("Need to provide embedding or list of embeddings.")
+        emb_layer = modules.EmbeddingLayer(
+            args.d, data,
+            normalize=not args.no_normalize,
+            num_pad=args.num_pad,
+            project_dim=args.project_dim,
+        )
 
     orig_emb_layer = emb_layer
 
     nclasses = max(train_y)+1
-    logging.info(str(nclasses) + " classes in total")
+    logger.info(str(nclasses) + " classes in total")
 
     train_x, train_y = dataloader.create_batches(
         train_x, train_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = 'sst' in args.dataset
+        sort = 'sst' in args.dataset,
         # sort = args.dataset == 'sst'
+		seed = args.data_seed
     )
     valid_x, valid_y = dataloader.create_batches(
         valid_x, valid_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = 'sst' in args.dataset
+        sort = 'sst' in args.dataset,
+		seed = args.data_seed
         # sort = args.dataset == 'sst'
     )
     test_x, test_y = dataloader.create_batches(
         test_x, test_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = 'sst' in args.dataset
+        sort = 'sst' in args.dataset,
+		seed = args.data_seed
         # sort = args.dataset == 'sst'
     )
 
@@ -229,23 +264,20 @@ def main(args):
     best_valid = 1e+8
     test_err = 1e+8
 
-    if not args.tag:
-        if args.cnn:
-            tag = "model_cnn_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
-        elif args.la:
-             tag = "model_la_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
-        elif args.lstm:
-            tag = "model_lstm_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
-                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
-    else: # enables deprecated use of naming
-        tag = args.tag
+    pred_file = os.path.join(args.out, "{tag}.pred".format(tag=args.tag))
+    prob_file = os.path.join(args.out, "{tag}.prob".format(tag=args.tag))
 
-    # pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
-    # prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
-    pred_file = None
-    prob_file = None
+    save_mdl = os.path.join(args.out, "{tag}.ckpt".format(tag=args.tag)) if not args.save_mdl else args.save_mdl
+
+    if args.eval:
+        sentence_emb_file = os.path.join(args.out, "{tag}.sentence_emb".format(tag=args.tag))
+        gold_file = os.path.join(args.out, "{tag}.gold".format(tag=args.tag))
+        test_err = eval_model(model, test_x, test_y, pred_file=pred_file,            prob_file=prob_file, sentence_emb_file=sentence_emb_file, gold_file=gold_file)
+        return test_err
+
+    vocab_file = os.path.join(args.out, "{tag}.vocab.pkl".format(tag=args.tag))
+    with open(vocab_file, 'wb') as f:
+        pickle.dump((model.emb_layer.word2id, model.emb_layer.embedding.weight.data), f)
 
     # Normal training
     if not args.snapshot:
@@ -255,67 +287,21 @@ def main(args):
                 valid_x, valid_y,
                 test_x, test_y,
                 best_valid, test_err,
-                save_mdl=args.save_mdl,
+                save_mdl=save_mdl,
                 pred_file=pred_file,
                 prob_file=prob_file
             )
             if args.lr_decay>0:
                 optimizer.param_groups[0]['lr'] *= args.lr_decay
 
-    # Snapshot ensembling
-    else:
-        # Modified from https://github.com/moskomule/pytorch.snapshot.ensembles
-        logging.info("Using snapshot ensembling.")
-        snapshot_dir = os.path.join(args.out, "snapshots_{}".format(args.cycles))
-
-        if not os.path.exists(snapshot_dir):
-            os.makedirs(snapshot_dir)
-        cycles = args.cycles
-        epochs = args.max_epoch
-        epochs_per_cycle = epochs // cycles
-        if epochs % cycles != 0:
-            logging.warning("Total number of epochs is not divisible by number of cycles.")
-        epoch = 0
-        for cycle in range(cycles):
-            logging.info("Cycle {cycle}".format(cycle=cycle))
-            cycle_tag = "{tag}_cycle_{cycle}".format(tag=tag, cycle=cycle)
-            for cycle_epoch in range(epochs_per_cycle):
-                lr = cyclic_lr(args.lr, cycle_epoch, epochs_per_cycle)
-                # Update learning rate to cyclic learning rate
-                optimizer.param_groups[0]['lr'] = lr
-                best_valid, test_err = train_model(epoch, model, optimizer,
-                    train_x, train_y,
-                    valid_x, valid_y,
-                    test_x, test_y,
-                    best_valid, test_err
-                )
-                # Running count of total epochs
-                epoch += 1
-
-            # Save preds and probs for each snapshot *at the end of the snapshot*
-            pred_file = os.path.join(snapshot_dir, "{cycle_tag}.pred".format(cycle_tag=cycle_tag))
-            prob_file = os.path.join(snapshot_dir, "{cycle_tag}.prob".format(cycle_tag=cycle_tag))
-            eval_model(model, test_x, test_y, pred_file=pred_file, prob_file=prob_file)
-
-            # Checkpoint model at the end of the cycle
-            ckpt_file = os.path.join(snapshot_dir, "{cycle_tag}.ckpt".format(cycle_tag=cycle_tag))
-            save(model, optimizer, epoch, ckpt_file)
-
-            # Update embedding layer if there are multiple embeddings
-            if args.embedding_list is not None:
-                emb_layer = embedding_list[cycle]
-                assert(emb_layer.word2id == orig_emb_layer.word2id)
-                assert(emb_layer.n_d == orig_emb_layer.n_d)
-                model.emb_layer = emb_layer
-
-    logging.info("=" * 40)
-    logging.info("best_valid: {:.6f}".format(
+    logger.info("=" * 40)
+    logger.info("best_valid: {:.6f}".format(
         best_valid
     ))
-    logging.info("test_err: {:.6f}".format(
+    logger.info("test_err: {:.6f}".format(
         test_err
     ))
-    logging.info("=" * 40)
+    logger.info("=" * 40)
     return best_valid, test_err
 
 def train_sentiment(cmdline_args):
@@ -339,28 +325,55 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--data_seed", type=int, default=1234)
     argparser.add_argument("--save_mdl", type=str, default=None, help="Save model to this file.")
     argparser.add_argument("--load_mdl", type=str, default=None, help="Load model from this file.")
-    argparser.add_argument("--out", type=str, help="Path to output directory.")
+    argparser.add_argument("--out", type=str, help="Path to output directory", required=True)
     argparser.add_argument("--snapshot", action='store_true', help="Use snapshot ensembling")
     argparser.add_argument("--cycles", type=int, help="Number of cycles/snapshots to take")
     argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
+    argparser.add_argument("--num_pad", type=int, default=0, help='Number of dimensions to pad with zero')
+    argparser.add_argument("--project_dim", type=int, default=0, help='Number of dimensions to randomly project embedding to.')
+    argparser.add_argument("--eval", action='store_true', help="Just evaluate trained model")
+
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
-    args = argparser.parse_args(cmdline_args)
+    if cmdline_args != '':
+        args = argparser.parse_args(cmdline_args)
+    else:
+        args = argparser.parse_args()
+
+    if not args.tag:
+        if args.cnn:
+            args.tag = "model_cnn_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+        elif args.la:
+            args.tag = "model_la_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+        elif args.lstm:
+            args.tag = "model_lstm_dropout_{dropout}_seed_{seed}_lr_{lr}".format(
+                dropout=args.dropout, seed=args.model_seed, lr=args.lr)
+    else: # enables deprecated use of naming
+        args.tag = args.tag
+
+    fh = logging.FileHandler('{out}/{tag}.log'.format(out=args.out, tag=args.tag))
+    formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
 
     # Dump git hash
     # h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
-    # logging.info("Git hash: " + h)
+    # logger.info("Git hash: " + h)
 
     # Dump embedding hash
     if args.embedding:
         embedding_hash = hashlib.md5(open(args.embedding, 'rb').read()).hexdigest()
-        logging.info("Embedding hash: " + embedding_hash)
+        logger.info("Embedding hash: " + embedding_hash)
 
     if args.no_cudnn:
         torch.backends.cudnn.enabled = False
-        logging.info("CuDNN Disabled!!!")
+        logger.info("CuDNN Disabled!!!")
 
     # Set random seed for torch
     torch.manual_seed(args.model_seed)
@@ -370,8 +383,11 @@ def train_sentiment(cmdline_args):
     np.random.seed(seed=args.model_seed)
 
     # Dump command line arguments
-    logging.info("Machine: " + os.uname()[1])
-    logging.info("CMD: python " +  " ".join(sys.argv))
-    print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logging.info)
+    logger.info("Machine: " + os.uname()[1])
+    logger.info("CMD: python " +  " ".join(sys.argv))
+    print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logger.info)
     # print (args)
     return main(args)
+
+if __name__ == "__main__":
+    train_sentiment('')

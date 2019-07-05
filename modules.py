@@ -3,6 +3,7 @@ import sys
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import numpy as np
 
 import logging
 
@@ -26,20 +27,21 @@ class CNN_Text(nn.Module):
     def forward(self, x):
         # x is (batch, len, d)
         x = x.unsqueeze(1) # (batch, Ci, len, d)
-        x = [F.relu(conv(x)).squeeze(3) for conv in self.convs1] #[(batch, Co, len), ...]        
+        x = [F.relu(conv(x)).squeeze(3) for conv in self.convs1] #[(batch, Co, len), ...]
         x = [F.max_pool1d(i, i.size(2)).squeeze(2) for i in x] #[(N,Co), ...]
         x = torch.cat(x, 1)
         return x
 
 
 class EmbeddingLayer(nn.Module):
-    def __init__(self, n_d, words, embs=None, fix_emb=True, oov='<oov>', pad='<pad>', normalize=True):
+    def __init__(self, n_d, words, embs=None, fix_emb=True, oov='<oov>', pad='<pad>', normalize=True, num_pad=0, project_dim=0):
         super(EmbeddingLayer, self).__init__()
         word2id = {}
         if embs is not None:
             embwords, embvecs = embs
             for word in embwords:
-                assert word not in word2id, "Duplicate words in pre-trained embeddings"
+                if word in word2id:
+                    print(f"Duplicate words in pre-trained embeddings, {word}")
                 word2id[word] = len(word2id)
 
             logging.info("{} pre-trained word embeddings loaded.".format(len(word2id)))
@@ -61,17 +63,44 @@ class EmbeddingLayer(nn.Module):
 
         self.word2id = word2id
         self.n_V, self.n_d = len(word2id), n_d
-        logging.info("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
-            self.n_V, len(embwords), self.n_V - len(embwords)))
+        if embs is not None:
+            logging.info("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
+                self.n_V, len(embwords), self.n_V - len(embwords)))
         self.oovid = word2id[oov]
         self.padid = word2id[pad]
         self.embedding = nn.Embedding(self.n_V, n_d)
         self.embedding.weight.data.uniform_(-0.25, 0.25)
+        self.project_dim = project_dim
 
         if embs is not None:
             weight  = self.embedding.weight
             weight.data[:len(embwords)].copy_(torch.from_numpy(embvecs))
             logging.info("embedding shape: {}".format(weight.size()))
+
+        if project_dim > 0:
+            # random projection matrix
+            projection = torch.from_numpy(np.random.uniform(-1./np.sqrt(n_d), 1./np.sqrt(n_d), size=(project_dim,n_d))).float()
+            self.embedding.weight.data = self.embedding.weight.data.matmul(projection.t())
+            logging.info("Generated projection matrix.")
+            # update dimensions of embedding layer
+            self.n_d = project_dim
+
+        if num_pad > 0:
+            logging.info("Padding embedding to {}".format(num_pad))
+            old_weight = self.embedding.weight.data
+            # copy weight data into new self.embedding
+            self.embedding = nn.Embedding(self.n_V, num_pad)
+
+            # set values to zero
+            weight = self.embedding.weight
+            weight.data.fill_(0)
+            weight.data[:,:n_d].copy_(old_weight)
+            # update dimensions of embedding layer
+            self.n_d = num_pad
+
+        if fix_emb:
+            logging.info("Fixing embedding!")
+            self.embedding.weight.requires_grad = False
 
         if normalize:
             weight = self.embedding.weight
@@ -80,8 +109,10 @@ class EmbeddingLayer(nn.Module):
                 norms = norms.unsqueeze(1)
             weight.data.div_(norms.expand_as(weight.data))
 
-        if fix_emb:
-            self.embedding.weight.requires_grad = False
-
     def forward(self, input):
+        # if self.project_dim > 0:
+        #     emb = self.embedding(input)
+        #     # random projection
+        #     emb = emb.matmul(self.projection.t())
+        #     return emb
         return self.embedding(input)

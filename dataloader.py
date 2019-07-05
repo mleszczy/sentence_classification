@@ -29,8 +29,8 @@ def create_one_batch(x, y, map2id, oov='<oov>'):
     return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
 
 # shuffle training examples and create mini-batches
-def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
-
+def create_batches(x, y, batch_size, map2id, perm=None, sort=False, seed=1234):
+    random.seed(seed)
     lst = perm or range(len(x))
 
     # sort sequences based on their length; necessary for SST
@@ -82,7 +82,7 @@ def load_embedding_txt(path, word_dict):
         embeddings = []
         if is_fasttext_format(lines): lines = lines[1:]
         for line in lines:
-            row = line.strip('\n').split(' ')
+            row = line.rstrip().split(' ')
             word = row.pop(0)
             if word_dict is not None and word not in word_dict:
                 continue
