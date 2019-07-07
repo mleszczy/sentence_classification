@@ -451,6 +451,9 @@ if __name__ == "__main__":
     # Set random seed for numpy
     np.random.seed(seed=args.model_seed)
 
+    # set random seed for python
+    random.seed(args.model_seed)
+
     # Dump command line arguments
     logging.info("Machine: " + os.uname()[1])
     logging.info("CMD: python " +  " ".join(sys.argv))
