@@ -28,6 +28,21 @@ def create_one_batch(x, y, map2id, oov='<oov>'):
     assert x.size(0) == length*batch_size
     return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
 
+def create_one_batch_feat_input(x, y):
+    # make sure each sample in x is in the shape [seq length, n_dim]
+    lengths = [sample.shape[0] for sample in x]
+    max_length = max(lengths)
+    n_sample = len(lengths)
+    n_dim = x[0].shape[-1]
+    batch_x = torch.zeros([max_length, n_sample, n_dim])
+    for i, (sample, length) in enumerate(zip(x, lengths)):
+        batch_x[:length, i, :].copy_(torch.from_numpy(sample))
+    batch_y = torch.LongTensor(y)
+    batch_len = torch.LongTensor(lengths)
+    # we keep the batch on cpu so that for the largest dataset
+    # the memory would not explode
+    return batch_x.contiguous(), batch_y.contiguous(), batch_len.contiguous()
+
 # shuffle training examples and create mini-batches
 def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
 
@@ -63,6 +78,49 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
     ))
 
     return batches_x, batches_y
+
+def create_batches_feat_input(x, y, batch_size, sort=False):
+    lst = range(len(x))
+    # sort sequences based on their length; necessary for SST
+    if sort:
+        assert len(x[0].shape) == 2, "currently only support 2d feature input / sample"
+        lst = sorted(lst, key=lambda i: x[i].shape[0])
+        logging.info("minibatches are length sorted")
+
+    x = [ x[i] for i in lst ]
+    y = [ y[i] for i in lst ]
+
+    sum_len = 0.0
+    batches_x = [ ]
+    batches_y = [ ]
+    batches_len = [ ]
+    size = batch_size
+    nbatch = (len(x)-1) // size + 1
+    for i in range(nbatch):
+        ## sanity check batch creation using the following two print lines
+        # print("test before ", x[(i+1)*size-1].shape, x[(i+1)*size-1], x[(i+1)*size-1].sum(-1))
+        bx, by, blen = create_one_batch_feat_input(x[i*size:(i+1)*size], y[i*size:(i+1)*size])
+        # print("test after ", bx[:, -1, :], bx[:, -1, :].shape, bx.shape, bx[:, -1, :].sum(-1))
+        sum_len += bx.shape[0]
+        batches_x.append(bx)
+        batches_y.append(by)
+        batches_len.append(blen)
+    assert nbatch == len(batches_x)
+    assert nbatch == len(batches_y)
+    assert nbatch == len(batches_len)
+
+    if sort:
+        perm = list(range(nbatch))
+        random.shuffle(perm)
+        batches_x = [ batches_x[i] for i in perm ]
+        batches_y = [ batches_y[i] for i in perm ]
+        batches_len = [ batches_len[i] for i in perm ]
+
+    logging.info("{} batches, avg len: {:.1f}".format(
+        nbatch, sum_len/nbatch
+    ))
+
+    return batches_x, batches_y, batches_len
 
 def load_embedding_npz(path):
     data = np.load(path)
@@ -208,6 +266,22 @@ def read_split_dataset(data_dir, dataset):
         # no need to clean, because we already did this before writing the files.
         data_list[i], label_list[i] = read_dataset(dataset_path, clean=False)
     return data_list[0], label_list[0], data_list[1], label_list[1],data_list[2], label_list[2]
+
+def read_npy_dataset(data_dir, dataset):
+    train_x = np.load("{}/{}.{}".format(data_dir, dataset, "train.feature.npz"))
+    train_x = [train_x[name] for name in train_x.files]
+    train_y = np.load("{}/{}.{}".format(data_dir, dataset, "train.label.npy"))
+    valid_x = np.load("{}/{}.{}".format(data_dir, dataset, "heldout.feature.npz"))
+    valid_x = [valid_x[name] for name in valid_x.files]    
+    valid_y = np.load("{}/{}.{}".format(data_dir, dataset, "heldout.label.npy"))
+    test_x = np.load("{}/{}.{}".format(data_dir, dataset, "test.feature.npz"))
+    test_x = [test_x[name] for name in test_x.files]    
+    test_y = np.load("{}/{}.{}".format(data_dir, dataset, "test.label.npy"))
+    logging.info(" data length, {}, {}, {}".format(len(train_x), len(valid_x), len(test_x)))
+    assert len(train_x) == len(train_y)
+    assert len(valid_x) == len(valid_y)
+    assert len(test_x) == len(test_y)
+    return train_x, train_y, valid_x, valid_y, test_x, test_y
 
 def write_split_dataset(data_dir, train_x, train_y, valid_x, valid_y, test_x, test_y):
     data_split_strs = ['train','heldout','test']
