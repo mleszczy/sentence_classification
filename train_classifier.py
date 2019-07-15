@@ -7,6 +7,7 @@ import random
 import math
 from subprocess import check_output
 import hashlib
+import shutil 
 
 import numpy as np
 import torch
@@ -267,7 +268,9 @@ def main(args):
     pred_file = os.path.join(args.out, "{tag}.pred".format(tag=args.tag))
     prob_file = os.path.join(args.out, "{tag}.prob".format(tag=args.tag))
 
-    save_mdl = os.path.join(args.out, "{tag}.ckpt".format(tag=args.tag)) if not args.save_mdl else args.save_mdl
+    save_mdl = os.path.join("/tmp", os.path.basename(args.embedding), os.path.basename(args.out), "{tag}.ckpt".format(tag=args.tag)) if not args.save_mdl else args.save_mdl
+    os.makedirs(os.path.dirname(save_mdl), exist_ok=True)
+    # save_mdl = os.path.join(args.out, "{tag}.ckpt".format(tag=args.tag)) if not args.save_mdl else args.save_mdl
 
     if args.eval:
         sentence_emb_file = os.path.join(args.out, "{tag}.sentence_emb".format(tag=args.tag))
@@ -276,8 +279,8 @@ def main(args):
         return test_err
 
     vocab_file = os.path.join(args.out, "{tag}.vocab.pkl".format(tag=args.tag))
-    with open(vocab_file, 'wb') as f:
-        pickle.dump((model.emb_layer.word2id, model.emb_layer.embedding.weight.data), f)
+    # with open(vocab_file, 'wb') as f:
+    #     pickle.dump((model.emb_layer.word2id, model.emb_layer.embedding.weight.data), f)
 
     # Normal training
     if not args.snapshot:
@@ -302,6 +305,9 @@ def main(args):
         test_err
     ))
     logger.info("=" * 40)
+
+    shutil.move(save_mdl, "{resultdir}/{tag}.ckpt".format(resultdir=args.out,tag=args.tag))
+
     return best_valid, test_err
 
 def train_sentiment(cmdline_args):
