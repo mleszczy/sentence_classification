@@ -34,14 +34,14 @@ class CNN_Text(nn.Module):
 
 
 class EmbeddingLayer(nn.Module):
-    def __init__(self, n_d, words, embs=None, fix_emb=True, oov='<oov>', pad='<pad>', normalize=True, num_pad=0, project_dim=0):
+    def __init__(self, n_d, words, embs=None, fix_emb=True, oov='<oov>', pad='<pad>', normalize=True, num_pad=0, project_dim=0, normalize_list=None, median=1, num_normalize=0):
         super(EmbeddingLayer, self).__init__()
         word2id = {}
         if embs is not None:
             embwords, embvecs = embs
             for word in embwords:
                 if word in word2id:
-                    print(f"Duplicate words in pre-trained embeddings, {word}")
+                    raise ValueError(f"Duplicate words in pre-trained embeddings, {word}")
                 word2id[word] = len(word2id)
 
             logging.info("{} pre-trained word embeddings loaded.".format(len(word2id)))
@@ -98,16 +98,31 @@ class EmbeddingLayer(nn.Module):
             # update dimensions of embedding layer
             self.n_d = num_pad
 
-        if fix_emb:
-            logging.info("Fixing embedding!")
-            self.embedding.weight.requires_grad = False
-
+        if normalize_list is not None: 
+            normalize_list = open(normalize_list, 'r')
+            normalize_list = [line.strip() for line in normalize_list.readlines()]
+            assert len(set(normalize_list)) == num_normalize, "Number to normalize and normalize list don't match. Make sure you have specified num_normalize"
+            norms = weight.data.norm(2,1)
+            # normalize selected words to the median value 
+            # TODO (mleszczy): make vectorized
+            normalize_list_set = set(normalize_list)
+            # print(len(normalize_list_set))
+            for word in word2id: 
+                if word in normalize_list_set: 
+                    idx = word2id[word]
+                    weight.data[idx] = weight.data[idx].div_(norms[idx]/float(median))
+                    # print("norm: ", np.linalg.norm(weight.data[idx].numpy()))
+                    
         if normalize:
             weight = self.embedding.weight
             norms = weight.data.norm(2,1)
             if norms.dim() == 1:
                 norms = norms.unsqueeze(1)
             weight.data.div_(norms.expand_as(weight.data))
+
+        if fix_emb:
+            logging.info("Fixing embedding!")
+            self.embedding.weight.requires_grad = False
 
     def forward(self, input):
         # if self.project_dim > 0:

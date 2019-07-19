@@ -155,6 +155,11 @@ def train_model(epoch, model, optimizer,
         loss = criterion(output, y)
         loss.backward()
         optimizer.step()
+        # logger.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f}".format(
+        #     epoch, niter,
+        #     optimizer.param_groups[0]['lr'],
+        #     loss.data
+        # ))
 
     valid_err = eval_model(model, valid_x, valid_y)
 
@@ -196,7 +201,10 @@ def main(args):
             embs = dataloader.load_embedding(args.embedding),
             normalize=not args.no_normalize,
             num_pad=args.num_pad,
-            project_dim=args.project_dim
+            project_dim=args.project_dim, 
+            normalize_list=args.normalize_list, 
+            median=args.median, 
+            num_normalize=args.num_normalize
         )
     elif args.embedding_list:
         logger.info("Using embedding list.")
@@ -340,6 +348,9 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--num_pad", type=int, default=0, help='Number of dimensions to pad with zero')
     argparser.add_argument("--project_dim", type=int, default=0, help='Number of dimensions to randomly project embedding to.')
     argparser.add_argument("--eval", action='store_true', help="Just evaluate trained model")
+    argparser.add_argument("--normalize_list", type=str, help='List of vocab words to normalize to median value.')
+    argparser.add_argument("--median", type=float, help='Median value to normalize embedding vectors to.')
+    argparser.add_argument("--num_normalize", type=int, help='Number to normalize. Should match normalize list contents.')
 
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
