@@ -69,7 +69,7 @@ def load_embedding_npz(path):
     return [ str(w) for w in data['words'] ], data['vals']
 
 # TODO: This is largely copy-pasted from utils.py. One file should import from the other.
-def load_embedding_txt(path, word_dict, embed_type='orig'):
+def load_embedding_txt(path, word_dict):
     """
     Loads a GloVe or FastText format embedding at specified path. Returns a
     vector of strings that represents the vocabulary and a 2-D numpy matrix that
@@ -89,29 +89,6 @@ def load_embedding_txt(path, word_dict, embed_type='orig'):
             wordlist.append(word)
             embeddings.append([float(i) for i in row])
         embeddings = np.array(embeddings)
-        (vocab,dim) = embeddings.shape
-        mean = np.mean(embeddings)
-        std = np.std(embeddings)
-    if embed_type == 'rand':
-        # perhaps let dimension be a parameter here?
-        embeddings = np.random.randn(vocab,dim) * std + mean
-    elif embed_type == 'char':
-        # perhaps let the "n" of the character n-gram, and the dimension of the random projections, be parameters here?
-        embeddings[:] = 0
-        n = 3
-        ngram_dict = {}
-        for i,word in enumerate(wordlist):
-            ngrams = [word[j:j+n] for j in range(len(word)-n+1)]
-            for ngram in ngrams:
-                if ngram not in ngram_dict:
-                    ngram_dict[ngram] = np.random.rand(dim)
-                embeddings[j,:] = embeddings[j,:] + ngram_dict[ngram]
-            # This corresponds to sign(W^t x) \in {-1,1}, where x is the binary character n-gram vector
-            embeddings = np.sign(embeddings)
-            # This is simply to ensure that the scale of the embeddings is the same as the original pre-trained embeddings
-            embeddings = embeddings * (std / np.std(embeddings))    
-    elif embed_type == 'wordnet':
-        
     assert len(wordlist) == embeddings.shape[0], 'Embedding dim must match wordlist length.'
     logging.info('Finished loading embeddings')
     return wordlist, embeddings
@@ -124,13 +101,13 @@ def is_fasttext_format(lines):
 def load_embedding_pkl(path):
     return pickle.load(open(path, "rb"))
 
-def load_embedding(path, word_dict=None, embed_type='orig'):
+def load_embedding(path, word_dict=None):
     if path.endswith(".npz"):
         return load_embedding_npz(path)
     elif path.endswith(".pkl"):
         return load_embedding_pkl(path)
     else:
-        return load_embedding_txt(path, word_dict, embed_type=embed_type)
+        return load_embedding_txt(path, word_dict)
 
 def clean_str(string, TREC=False):
     """

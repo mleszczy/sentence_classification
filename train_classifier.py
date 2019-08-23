@@ -167,7 +167,7 @@ def main(args):
         logging.info("Using single embedding file.")
         emb_layer = modules.EmbeddingLayer(
             args.d, data,
-            embs = dataloader.load_embedding(args.embedding, args.embed_type),
+            embs = dataloader.load_embedding(args.embedding),
             normalize=not args.no_normalize
         )
     elif args.embedding_list:
@@ -327,7 +327,6 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--dataset", type=str, default="mr", help="which dataset")
     argparser.add_argument("--path", type=str, required=True, help="path to corpus directory")
     argparser.add_argument("--embedding", type=str, help="word vectors")
-    argparser.add_argument("--embed_type", type=str, choices=['orig','rand','char','wordnet'], default='orig', help="Type of word vectors to use") # Added by Avner 8/20/19
     argparser.add_argument("--batch_size", "--batch", type=int, default=32)
     argparser.add_argument("--max_epoch", type=int, default=100)
     argparser.add_argument("--d", type=int, default=128)
