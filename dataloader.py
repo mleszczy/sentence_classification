@@ -29,7 +29,7 @@ def create_one_batch(x, y, map2id, oov='<oov>'):
     return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
 
 # shuffle training examples and create mini-batches
-def create_batches(x, y, batch_size, map2id, perm=None, sort=False, seed=1234):
+def create_batches(x, y, batch_size, map2id, perm=None, sort=False, shuffle=False, seed=1234):
     random.seed(seed)
     lst = perm or range(len(x))
 
@@ -52,7 +52,7 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False, seed=1234):
         batches_x.append(bx)
         batches_y.append(by)
 
-    if sort:
+    if sort or shuffle:
         perm = list(range(nbatch))
         random.shuffle(perm)
         batches_x = [ batches_x[i] for i in perm ]

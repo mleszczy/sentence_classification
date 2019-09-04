@@ -66,6 +66,7 @@ class EmbeddingLayer(nn.Module):
         if embs is not None:
             logging.info("Number of vectors: {}, Number of loaded vectors: {}, Number of oov {}".format(
                 self.n_V, len(embwords), self.n_V - len(embwords)))
+            print(f"Number of vectors: {self.n_V}, Number of loaded vectors: {len(embwords)}, Number of oov {self.n_V - len(embwords)}")
         self.oovid = word2id[oov]
         self.padid = word2id[pad]
         self.embedding = nn.Embedding(self.n_V, n_d)
@@ -98,21 +99,21 @@ class EmbeddingLayer(nn.Module):
             # update dimensions of embedding layer
             self.n_d = num_pad
 
-        if normalize_list is not None: 
+        if normalize_list is not None:
             normalize_list = open(normalize_list, 'r')
             normalize_list = [line.strip() for line in normalize_list.readlines()]
             assert len(set(normalize_list)) == num_normalize, "Number to normalize and normalize list don't match. Make sure you have specified num_normalize"
             norms = weight.data.norm(2,1)
-            # normalize selected words to the median value 
+            # normalize selected words to the median value
             # TODO (mleszczy): make vectorized
             normalize_list_set = set(normalize_list)
             # print(len(normalize_list_set))
-            for word in word2id: 
-                if word in normalize_list_set: 
+            for word in word2id:
+                if word in normalize_list_set:
                     idx = word2id[word]
                     weight.data[idx] = weight.data[idx].div_(norms[idx]/float(median))
                     # print("norm: ", np.linalg.norm(weight.data[idx].numpy()))
-                    
+
         if normalize:
             weight = self.embedding.weight
             norms = weight.data.norm(2,1)
