@@ -82,6 +82,7 @@ class EmbeddingLayer(nn.Module):
 
         if fix_emb:
             self.embedding.weight.requires_grad = False
+        print("End of EmbeddingLayer")
 
     def forward(self, input):
         return self.embedding(input)

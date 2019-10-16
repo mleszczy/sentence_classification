@@ -77,21 +77,24 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     total_loss = 0.0
     preds = []
     probs = []
-    for x, y in zip(valid_x, valid_y):
-        x, y = Variable(x, volatile=True), Variable(y)
-        output = model(x)
-        loss = criterion(output, y)
-        if torch.__version__ >= '0.4':
-            total_loss += loss.data*x.size(1)
-        else:
-            total_loss += loss.data[0]*x.size(1)
-        pred = output.data.max(1)[1]
-        correct += pred.eq(y.data).cpu().sum()
-        cnt += y.numel()
+    with torch.no_grad():
+        for x, y in zip(valid_x, valid_y):
+            x, y = Variable(x), Variable(y)
+            output = model(x)
+            loss = criterion(output, y)
+            if torch.__version__ >= '0.4':
+                total_loss += loss.data*x.size(1)
+            else:
+                total_loss += loss.data[0]*x.size(1)
+            pred = output.data.max(1)[1]
+            correct += pred.eq(y.data).cpu().sum()
+            cnt += y.numel()
 
-        preds += pred.cpu().numpy().tolist()
-        probs += output.data.cpu().numpy().tolist()
+            preds += pred.cpu().numpy().tolist()
+            probs += output.data.cpu().numpy().tolist()
 
+
+    print("Past no grad")
     if pred_file is not None:
         with open(pred_file, 'wb') as outfile:
             pickle.dump(preds, outfile)
@@ -160,9 +163,10 @@ def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
     return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
 
 def main(args):
-    train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset)
+    train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset, pretrainfraction=args.pretrainfraction)
     data = train_x + valid_x + test_x
 
+    print("back in main of train_classifier.py to continue training")
     if args.embedding:
         logging.info("Using single embedding file.")
         emb_layer = modules.EmbeddingLayer(
@@ -345,6 +349,7 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
+    argparser.add_argument("--pretrainfraction", type=float, default=1.0, help="Train with the specified fraction of training data")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)
