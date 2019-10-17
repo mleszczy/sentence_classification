@@ -39,7 +39,7 @@ class BertEmbeddingLayer(nn.Module):
         self.n_d = 768 # dimension of BERT contextual embeddings (output of last hidden layer)
 
     def forward(self, input_ids, input_masks):
-        with self.model.no_grad():
+        with torch.no_grad():
             all_encoder_layers, _ = self.model(input_ids, token_type_ids=None, attention_mask=input_masks)
             print('BertEmbeddingLayer: all_encoder_layers.shape = {}'.format(all_encoder_layers.shape))
             # get last hidden layer
