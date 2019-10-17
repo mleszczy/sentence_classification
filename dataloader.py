@@ -18,19 +18,55 @@ def pad(sequences, pad_token='<pad>', pad_left=True):
         return [ [pad_token]*(max_len-len(seq)) + seq for seq in sequences ]
     return [ seq + [pad_token]*(max_len-len(seq)) for seq in sequences ]
 
-def create_one_batch(x, y, map2id, oov='<oov>'):
-    oov_id = map2id[oov]
-    x = pad(x)
-    length = len(x[0])
-    batch_size = len(x)
-    x = [ map2id.get(w, oov_id) for seq in x for w in seq ]
-    x = torch.LongTensor(x)
-    assert x.size(0) == length*batch_size
-    return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
+def get_token_ids_and_masks(tokenized_sentences, tokenizer):
+    max_sentence_length = len(max(tokenized_sentences, key=len))
+    input_ids = []
+    input_masks = []
+    for sentence in tokenized_sentences:
+        sentence_input_ids = tokenizer.convert_tokens_to_ids(sentence)
+        sentence_input_mask = [1] * len(sentence_input_ids)
+        # Zero-pad up to the sequence length.
+        while len(sentence_input_ids) < max_sentence_length:
+            sentence_input_ids.append(0)
+            sentence_input_mask.append(0)
+        input_ids.append(sentence_input_ids)
+        input_masks.append(sentence_input_mask)
+    return input_ids, input_masks
+
+def create_one_batch(x, y, map2id, oov='<oov>', tokenizer=None):
+    if tokenizer:
+        # This is true when use_bert_embeddings is true.
+        batch_input_ids, batch_input_masks = get_token_ids_and_masks(x, tokenizer)
+        batch_input_ids = torch.LongTensor(batch_input_ids).t().contiguous().cuda()
+        batch_input_masks = torch.LongTensor(batch_input_masks).t().contiguous().cuda()
+        y = torch.LongTensor(y).cuda()
+        return (batch_input_ids, batch_input_masks), y
+    else:
+        oov_id = map2id[oov]
+        x = pad(x)
+        length = len(x[0])
+        batch_size = len(x)
+        x = [ map2id.get(w, oov_id) for seq in x for w in seq ]
+        x = torch.LongTensor(x)
+        assert x.size(0) == length*batch_size
+        return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
+
+def tokenize(sentences, dataset, tokenizer):
+    tokenized_sentences = []
+    for sentence in sentences:
+        if tokenizer:
+            tokens = []
+            tokens.append('[CLS]')
+            tokens.extend(tokenizer.tokenize(sentence))
+            tokens.append('[SEP]')
+        else:
+            text = clean_str(sentence, dataset)
+            tokens = text.split()
+        tokenized_sentences.append(tokens)
+    return tokenized_sentences
 
 # shuffle training examples and create mini-batches
-def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
-
+def create_batches(x, y, batch_size, map2id, perm=None, sort=False, tokenizer=None):
     lst = perm or range(len(x))
 
     # sort sequences based on their length; necessary for SST
@@ -47,8 +83,8 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False):
     size = batch_size
     nbatch = (len(x)-1) // size + 1
     for i in range(nbatch):
-        bx, by = create_one_batch(x[i*size:(i+1)*size], y[i*size:(i+1)*size], map2id)
-        sum_len += len(bx)
+        bx, by = create_one_batch(x[i*size:(i+1)*size], y[i*size:(i+1)*size], map2id, tokenizer=tokenizer)
+        sum_len += len(by)
         batches_x.append(bx)
         batches_y.append(by)
 
@@ -109,25 +145,29 @@ def load_embedding(path, word_dict=None):
     else:
         return load_embedding_txt(path, word_dict)
 
-def clean_str(string, TREC=False):
+def clean_str(string, dataset):
     """
     Tokenization/string cleaning for all datasets except for SST.
     Every dataset is lower cased except for TREC
     """
-    string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
-    string = re.sub(r"\'s", " \'s", string)
-    string = re.sub(r"\'ve", " \'ve", string)
-    string = re.sub(r"n\'t", " n\'t", string)
-    string = re.sub(r"\'re", " \'re", string)
-    string = re.sub(r"\'d", " \'d", string)
-    string = re.sub(r"\'ll", " \'ll", string)
-    string = re.sub(r",", " , ", string)
-    string = re.sub(r"!", " ! ", string)
-    string = re.sub(r"\(", " \( ", string)
-    string = re.sub(r"\)", " \) ", string)
-    string = re.sub(r"\?", " \? ", string)
-    string = re.sub(r"\s{2,}", " ", string)
-    return string.strip() if TREC else string.strip().lower()
+    string = string.strip()
+    if 'sst' in dataset:
+        return string
+    else:
+        string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
+        string = re.sub(r"\'s", " \'s", string)
+        string = re.sub(r"\'ve", " \'ve", string)
+        string = re.sub(r"n\'t", " n\'t", string)
+        string = re.sub(r"\'re", " \'re", string)
+        string = re.sub(r"\'d", " \'d", string)
+        string = re.sub(r"\'ll", " \'ll", string)
+        string = re.sub(r",", " , ", string)
+        string = re.sub(r"!", " ! ", string)
+        string = re.sub(r"\(", " \( ", string)
+        string = re.sub(r"\)", " \) ", string)
+        string = re.sub(r"\?", " \? ", string)
+        string = re.sub(r"\s{2,}", " ", string)
+        return string.strip() if (dataset=='trec') else string.strip().lower()
 
 def split_and_save_dataset(dataset, input_data_dir, output_data_dir):
     train_x, train_y, valid_x, valid_y, test_x, test_y = split_dataset(dataset, input_data_dir)
@@ -145,18 +185,18 @@ def split_dataset(dataset, data_dir):
     }
     if dataset == 'sst' or dataset == 'sst1':
         dataset_paths = [os.path.join(data_dir, filenames[dataset][i]) for i in range(3)]
-        train_x, train_y = read_dataset(dataset_paths[0], clean=False)
-        valid_x, valid_y = read_dataset(dataset_paths[1], clean=False)
-        test_x, test_y = read_dataset(dataset_paths[2], clean=False)
+        train_x, train_y = read_dataset(dataset_paths[0], dataset)
+        valid_x, valid_y = read_dataset(dataset_paths[1], dataset)
+        test_x, test_y = read_dataset(dataset_paths[2], dataset)
     else:
         if dataset == 'trec':
             dataset_paths = [os.path.join(data_dir, filenames[dataset][i]) for i in range(2)]
-            train_valid_x, train_valid_y = read_dataset(dataset_paths[0], TREC=True)
-            test_x, test_y = read_dataset(dataset_paths[1], TREC=True)
+            train_valid_x, train_valid_y = read_dataset(dataset_paths[0], dataset)
+            test_x, test_y = read_dataset(dataset_paths[1], dataset)
         else:
             assert dataset in ['mr','subj','cr','mpqa']
             dataset_path = os.path.join(data_dir, filenames[dataset])
-            data, labels = read_dataset(dataset_path)
+            data, labels = read_dataset(dataset_path, dataset)
             train_valid_x, train_valid_y, test_x, test_y = random_split(data, labels)
         train_x, train_y, valid_x, valid_y = random_split(train_valid_x, train_valid_y)
     return train_x, train_y, valid_x, valid_y, test_x, test_y
@@ -171,7 +211,7 @@ def random_split(data, labels, frac_split=0.9):
     split2_y = [ labels[i] for i in perm[M:] ]
     return split1_x, split1_y, split2_x, split2_y
 
-def read_dataset(path, clean=True, TREC=False):
+def read_dataset(path, dataset, clean=False, split=False):
     data = []
     labels = []
     if sys.version_info[0] < 3:
@@ -179,24 +219,30 @@ def read_dataset(path, clean=True, TREC=False):
             for line in fin.readlines():
                 label, sep, text = line.partition(' ')
                 label = int(label)
-                text = clean_str(text.strip(), TREC=TREC) if clean else text.strip()
+                text = clean_str(text, dataset) if clean else text.strip()
                 labels.append(label)
-                data.append(text.split())
+                if split:
+                    data.append(text.split())
+                else:
+                    data.append(text)
     else:
         with open(path, "r", encoding="ISO-8859-1") as fin:
             for line in fin.readlines():
                 label, sep, text = line.partition(' ')
                 label = int(label)
-                text = clean_str(text.strip(), TREC=TREC) if clean else text.strip()
+                text = clean_str(text, dataset) if clean else text.strip()
                 labels.append(label)
-                data.append(text.split())
+                if split:
+                    data.append(text.split())
+                else:
+                    data.append(text)
     return data, labels
 
 def write_dataset(path, data, labels):
     assert len(data) == len(labels)
     with open(path, 'w', encoding='ISO-8859-1') as f:
         for i in range(len(data)):
-            f.write('{} {}\n'.format(labels[i], ' '.join(data[i])))
+            f.write('{} {}\n'.format(labels[i], data[i]))
 
 def read_split_dataset(data_dir, dataset):
     data_split_strs = ['train','heldout','test']
@@ -205,8 +251,7 @@ def read_split_dataset(data_dir, dataset):
     for i in range(len(data_split_strs)):
         filename = '{}.{}.txt'.format(dataset, data_split_strs[i])
         dataset_path = os.path.join(data_dir, filename)
-        # no need to clean, because we already did this before writing the files.
-        data_list[i], label_list[i] = read_dataset(dataset_path, clean=False)
+        data_list[i], label_list[i] = read_dataset(dataset_path, dataset)
     return data_list[0], label_list[0], data_list[1], label_list[1],data_list[2], label_list[2]
 
 def write_split_dataset(data_dir, train_x, train_y, valid_x, valid_y, test_x, test_y):
@@ -220,15 +265,14 @@ def write_split_dataset(data_dir, train_x, train_y, valid_x, valid_y, test_x, te
 
 if __name__ == '__main__':
     random.seed(1)
-    # datasets = ['mr','subj','cr','sst','trec','mpqa']
-    datasets = ['sst1']
-    input_data_dir = '/Users/Jian/Data/research/smallfry/src/smallfry/third_party/sent-conv-torch/data'
-    output_data_dir = '/Users/Jian/Data/research/smallfry/src/smallfry/third_party/sentence_classification/data'
-    # input_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sent-conv-torch\\data'
-    # output_data_dir = 'C:\\Users\\avnermay\\git\\smallfry\\src\\third_party\\sentence_classification\\data'
+    datasets = ['mr','subj','cr','sst','trec','mpqa', 'sst1']
+    # datasets = ['sst1']
+    # input_data_dir = '/Users/Jian/Data/research/smallfry/src/smallfry/third_party/sent-conv-torch/data'
+    # output_data_dir = '/Users/Jian/Data/research/smallfry/src/smallfry/third_party/sentence_classification/data'
+    input_data_dir = 'C:\\Users\\Avner\\git\\smallfry_internal\\src\\smallfry\\third_party\\sent-conv-torch\\data'
+    output_data_dir = 'C:\\Users\\Avner\\git\\smallfry_internal\\src\\smallfry\\third_party\\sentence_classification\\data'
     for dataset in datasets:
         split_and_save_dataset(dataset, input_data_dir, output_data_dir)
-
 
 # def read_MR(path, seed=1234):
 #     file_path = os.path.join(path, "rt-polarity.all")

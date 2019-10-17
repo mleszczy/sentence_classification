@@ -16,7 +16,7 @@
 0 contesting
 0 mere
 0 hand it the bill
-0 a former army coup meister himself
+0 a former army coup - meister himself
 0 unheeded
 1 wants
 0 deep concern of
@@ -36,13 +36,13 @@
 0 repressive
 1 have sought
 0 have been extremely critical
-0 hard line
+0 hard - line
 0 brushed aside
 0 made unfounded charges by accusing
 0 backlash of adverse reactions
 1 number one democracy
 0 not a fair election
-0 a casualty of his own government 's attempt to maintain favor in washington
+0 a casualty of his own government's attempt to maintain favor in washington
 0 have also criticized
 0 spurned
 1 to ask
@@ -75,7 +75,7 @@
 0 to put it mildly
 0 culprits
 0 symptom of the 23 years of war that has devastated afghanistan
-0 farcical yet provocative
+0 farcical - yet - provocative
 1 invited
 0 refuses to bow
 0 without scientific basis
@@ -96,14 +96,14 @@
 0 benefits
 0 message
 0 such humanitarians as saddam hussein and the government of malaysia
-0 take justice to pre historic times
+0 take justice to pre - historic times
 0 chaos bordering on a binge of wanton killing
-0 he will be there in ramallah for as long as i remain prime minister
+0 he will be there [in ramallah] for as long as i remain prime minister
 0 something so petty
 1 everyday life will get back to normal
 0 fraudulent
 0 could cause great misfortune
-0 this right this right right
+0 this right - this right right
 0 disqualified president
 1 has repeatedly assured
 0 objections
@@ -297,7 +297,7 @@
 0 of all things
 0 frustrate as many voters as you can
 0 claims
-0 scandal mongering
+0 scandal - mongering
 0 refusal to classify
 0 continue to key up tensions
 1 sent congratulations
@@ -319,7 +319,7 @@
 1 free and fair
 0 wholesale rigging of the vote
 0 oppressive
-0 hurry up and wait
+0 hurry up and wait .
 0 refusal
 0 strikes at the heart
 0 do n't look natural
@@ -328,7 +328,7 @@
 0 do n't want
 1 can support
 0 does a poor job
-0 not the minister 's confrontational style
+0 not the minister's confrontational style
 1 is going to be interesting
 0 sudden deterioration
 0 appeared to be a show of force
@@ -360,7 +360,7 @@
 1 faithful to
 0 became concerned
 1 mutual respect
-0 anti american doctrines
+0 anti - american doctrines
 0 trying to use the time factor
 1 hopes
 0 saw
@@ -371,7 +371,7 @@
 1 a victory for democracy
 1 and they will get it
 0 severely damaged
-0 anti chavez protest
+0 anti - chavez protest
 1 tremendous opportunities
 0 brutality
 1 some goals
@@ -393,7 +393,7 @@
 0 dismantling , destroying and demoralizing
 0 a man blinded by power
 0 unilateral
-1 de escalation
+1 de - escalation
 0 permission being denied
 1 support for
 1 the success of the rio conference
@@ -481,7 +481,7 @@
 1 will be invited
 0 very dangerous
 1 dreaming
-0 angry anti us protests erupted
+0 angry anti - us protests erupted
 0 because of what they did
 0 only a hireling
 1 advise
@@ -518,7 +518,7 @@
 0 abandons
 0 claimed
 0 appalling
-0 nothing seemed more normal than to settle in someone else 's territory
+0 nothing seemed more normal than to settle in someone else's territory
 1 confident
 0 interfering
 1 wants
@@ -534,7 +534,7 @@
 1 insisted
 1 smoothly and flawlessly
 1 wish to express our solidarity
-0 so make that necessary restraint
+0 so make that necessary restraint .
 0 for once
 1 father of independence
 1 will be asked
@@ -545,7 +545,7 @@
 0 failed
 0 terrorists believe that anything goes
 0 not to embark on the suicidal path that he has chosen
-0 it 's too good for the bastards
+0 it's too good for the bastards
 0 exaggerated
 0 major uncertainty
 0 dismissed
@@ -560,7 +560,7 @@
 1 spoke in support of
 1 want to cooperate
 0 disenfranchised
-0 far worse than those prevailing in camp x ray
+0 far worse than those prevailing in camp x - ray
 1 believe
 0 to assassinate innocent activists and citizens
 1 certainly an ideal location
@@ -603,7 +603,7 @@
 0 is showing signs of disquiet
 0 probably female
 0 do not agree
-0 it 's hard to imagine them getting better treatment than they 're already receiving
+0 it's hard to imagine them getting better treatment than they're already receiving
 0 the us imperialist war maniacs' conspiracy
 1 talk anxiously
 1 boasts
@@ -631,7 +631,7 @@
 1 wants
 1 wants
 1 any danger
-1 calm and forward looking
+1 calm and forward - looking
 0 a government mouthpiece
 0 cramped and spartan
 1 ending
@@ -696,20 +696,20 @@
 1 fortunately
 1 appealed
 1 will be instrumental
-0 should not be loaded with all the world 's sins
+0 should not be loaded with all the world's sins
 0 just the way the prisoners like it back home
 1 credible
 1 takes a great deal of pride
 0 shackled like wild animals
 0 denied
 0 how am i supposed to
-0 it 's not their \( britain 's \) right or responsibility
+0 it's not their ( britain's ) right or responsibility
 1 tried to encourage
 1 universal values
 0 casting shadow
 1 were approved
 0 if he steals
-0 so called values of democracy and human rights
+0 so - called values of democracy and human rights
 0 with a sigh
 1 jubilant
 0 running slightly against
@@ -766,7 +766,7 @@
 1 transparent
 0 to attack
 0 chanting
-0 torture !
+0 torture ! .
 0 factually inaccurate
 0 forbids
 0 these leaks had put his life in danger
@@ -800,7 +800,7 @@
 1 support
 0 condemned
 1 peaceful way forward
-1 the discovery of god given human rights
+1 the discovery of god - given human rights
 0 violence and intimidation
 0 warnings
 0 those who would destroy it
@@ -816,7 +816,7 @@
 1 support
 0 cruel , inhuman or degrading treatment
 0 view
-1 adopted the most pro taiwan posture
+1 adopted the most pro - taiwan posture
 1 grand bargain
 1 advancing
 0 relished the role of cassandra to the philippine national police
@@ -831,7 +831,7 @@
 0 share a hatred
 0 such boasts
 0 warned
-1 as small \( yet acceptable \) as possible
+1 as small ( yet acceptable ) as possible
 1 peace be upon him
 1 we have dealt a stunning blow to imperialism
 0 gross misstatement
@@ -847,19 +847,19 @@
 0 a nation that ``continues to flaunt its hostility toward america and to support terror
 0 violate human rights
 1 expressed their satisfaction and support
-0 in the guise of its so called war on terror
+0 in the guise of its so - called war on terror
 1 appealed for
 1 a much better position
 1 hard to disagree
 1 the invitation of kingmakers to accept the crown
 0 was critical of
-0 long winded
+0 long - winded
 0 steal
 0 devastating
 0 this would of course require advanced technology and great cost
 1 good shape
 0 weaker side
-1 pro peace rally
+1 pro - peace rally
 1 hope
 0 took advantage
 1 prerogative and sovereign right
@@ -891,7 +891,7 @@
 0 warns
 0 this is our major concern
 1 promoted strongly
-0 anti us sentiment
+0 anti - us sentiment
 0 resentment
 0 turned him down
 0 attacks
@@ -929,7 +929,7 @@
 1 wants
 1 sustainable development and environmental protection
 0 plight
-0 the black hole of mazar isharif
+0 the black hole of mazar - isharif
 0 a pariah
 1 favorite of
 1 supports
@@ -953,8 +953,8 @@
 0 failure to ratify
 0 they stand with empty pockets and their hands empty , out toward alberta
 0 those who are not with him are against him
-0 so called
-0 is self inflicted
+0 so - called
+0 is self - inflicted
 0 have also moved to contest
 0 opposed
 0 finally rewarded
@@ -965,7 +965,7 @@
 0 biased propaganda
 0 warns
 0 criticism
-0 so called
+0 so - called
 0 be condemned by
 1 made the request
 1 should earnestly abide
@@ -973,7 +973,7 @@
 0 can only lead to bad decisions
 0 whose hair is not blondest of the blonde
 0 great shock and sorrow
-1 well organized participation
+1 well - organized participation
 1 seek
 0 one common denominator
 0 crowded , unventilated tents
@@ -994,7 +994,7 @@
 0 territorial ambition
 0 willing to die
 1 supported
-0 chapter of international terror
+0 chapter of international terror .
 0 did not conform
 0 wants
 0 incredibly difficult
@@ -1027,7 +1027,7 @@
 0 typical texan mentality
 1 one of the few enlightened officials
 0 allies are not satellites ,
-0 using violence , intimidation , special laws and dirty tricks to fix the two day election
+0 using violence , intimidation , special laws and dirty tricks to fix the two - day election
 0 alone
 0 refusal to accept
 0 used to further his electoral chances
@@ -1052,7 +1052,7 @@
 0 hidden agents
 0 new labyrinths and tunnels
 0 lost time and credibility on a failed bet
-0 must push for punitive action against mr mugabe
+0 must push for punitive action against mr . mugabe
 0 denies
 0 in the hands of the forces of money
 0 oppressive measures and activities
@@ -1063,9 +1063,9 @@
 0 is still taking the cool approach
 0 they are seeking unilaterally to become the masters of the world
 0 was it only the wish of socialist propaganda in those words
-0 condemned and counter attacked
+0 condemned and counter - attacked
 1 excused
-0 america 's biding
+0 america's biding
 1 always
 1 adopted
 1 want
@@ -1135,14 +1135,14 @@
 0 in order to stop the continuing decline
 1 wants
 0 terrorizing
-0 have expressed dissatisfaction but not surprise
-0 still tense relationship
+0 have expressed dissatisfaction - but not surprise
+0 still - tense relationship
 0 in fact unprecedented
 1 had repeatedly asked
 0 would be a reluctant financial firefighter
 1 wanted
 0 no to recognition
-1 world 's best chance
+1 world's best chance
 1 shown understanding
 0 disappoint
 0 axis of evil
@@ -1168,7 +1168,7 @@
 0 denying
 1 it is a positive development
 0 irritated
-1 the fatherland 's reunification
+1 the fatherland's reunification
 1 the hopes of
 0 palestinian hand that is stretched for peace
 1 should take urgent measures
@@ -1203,7 +1203,7 @@
 0 only
 0 uncontrollable social situation
 0 lumping
-1 well respected
+1 well - respected
 0 emphatically condemned
 0 utmost suffering
 0 bloodbaths
@@ -1211,7 +1211,7 @@
 0 has been on edge
 0 stop his repression
 0 criticisms
-0 against neo liberal globalization
+0 against neo - liberal globalization
 0 scandal of
 0 standing in the way
 1 please
@@ -1227,7 +1227,7 @@
 0 violent enemies
 0 find nothing positive
 1 amazingly roomy
-0 ill disciplined
+0 ill - disciplined
 1 also hope
 0 refusing
 0 are only dictated to him
@@ -1246,7 +1246,7 @@
 1 is wide awake
 0 could have ranted and raved
 1 abstractly recommend
-0 like alcatraz or devil 's island
+0 like alcatraz or devil's island
 0 precipitating the current crisis
 0 not in line with
 1 has no greater desire
@@ -1262,7 +1262,7 @@
 1 certainly called for
 0 to deny
 1 enjoying
-0 coup plotting
+0 coup - plotting
 1 plan
 0 jeopardy
 0 did not adequately allow the free and fair expression of will
@@ -1280,7 +1280,7 @@
 0 at best
 1 legitimate
 0 centered
-1 in argentina 's defense
+1 in argentina's defense
 0 several different disputes
 0 illegal combatants
 1 seek
@@ -1294,7 +1294,7 @@
 1 storm to victory
 0 simplistic
 0 excuses
-0 witch hunting
+0 witch - hunting
 0 loud opposition
 1 intensive efforts that our big sister , egypt
 0 ever more serious
@@ -1319,7 +1319,7 @@
 0 can not accept
 0 note with deep concern
 0 reckless
-0 an obsession fidel castro 's downfall
+0 an obsession - - fidel castro's downfall
 1 are eager
 0 extension of its characteristic policy of hegemony
 0 assassinate innocent activists and citizens
@@ -1330,7 +1330,7 @@
 1 endorse
 0 reckless
 0 are the violators of human rights
-0 every sector 's possibilities
+0 every sector's possibilities
 1 endorsed
 0 may be
 0 all kinds of provocative activities
@@ -1357,7 +1357,7 @@
 0 hence
 0 a primitive thirst for revenge
 0 have denied
-0 can not be solved by washington 's arbitrary decision
+0 can not be solved by washington's arbitrary decision
 0 claims
 0 was surprised , to put it mildly
 1 is happy to see
@@ -1366,14 +1366,14 @@
 0 the victim of state terrorism
 1 exalted
 0 would go against
-0 took to the streets around the country in a pot banging demonstration
+0 took to the streets around the country in a pot - banging demonstration
 0 decrying
 1 legitimate dissent
 0 stage
 1 congratulated
 0 imposing
 0 is at stake
-0 hard core
+0 hard - core
 0 domino effect
 0 it is impossible to expect
 0 scores of
@@ -1385,7 +1385,7 @@
 1 will now agree
 1 support
 0 described as
-1 the world 's sole superpower
+1 the world's sole superpower
 0 totally lack planning and administrative control
 0 without any international legitimacy
 0 resounding and sustained fall
@@ -1396,10 +1396,10 @@
 0 against obstructing
 0 gone farther and farther
 1 play a meaningful role
-0 it can not be anything but gangster like logic
+0 it can not be anything but gangster - like logic
 0 prevent such outlaw regimes and their terrorist cohorts
 0 other nations may try to do the same in less dire times
-0 muscle flexing
+0 muscle - flexing
 0 groundless plot
 0 clearly did n't work
 0 this is crazy
@@ -1450,7 +1450,7 @@
 1 is justified
 0 biggest
 0 criticism
-0 a tool to advance america 's foreign policy
+0 a tool to advance america's foreign policy
 0 only deserves rejection
 0 axis of evil
 0 objection
@@ -1482,7 +1482,7 @@
 1 peacefully
 0 brought the peace process to a deadlock
 1 dignity
-1 that 's a fair deal
+1 that's a fair deal
 0 disagreement with
 0 brazen distortion
 1 enhanced
@@ -1591,7 +1591,7 @@
 1 promoting peace and stability
 0 an illusion
 0 not sure
-0 that 's exactly what duhalde most lacks
+0 that's exactly what duhalde most lacks
 0 even if their special status comes from the fact
 1 could benefit
 0 bold
@@ -1603,7 +1603,7 @@
 0 slander
 0 concern
 0 rejects
-0 destroying the established eu supported infrastructure
+0 destroying the established - - eu - supported - - infrastructure
 0 sat on the fence for months
 1 most open
 1 defend freedom
@@ -1651,7 +1651,7 @@
 0 desperation of the people
 1 have urged
 0 backing away
-0 over burdening
+0 over - burdening
 0 axis of evil
 0 has denied
 0 unsubstantiated
@@ -1669,14 +1669,14 @@
 0 attempted
 0 refuses
 0 deteriorating with each passing day
-0 epic sized default
+0 epic - sized default
 0 concerns
 0 oppose
 0 opportunistic attacks on civil liberties around the world
 1 had agreed
 1 shows solidarity with the west
 0 viciously spoke ill
-0 its self seeking manipulation
+0 its self - seeking manipulation
 1 had accepted
 0 could destroy entire planets
 1 would honor
@@ -1695,7 +1695,7 @@
 1 not the zionists
 0 thugs
 0 deepened
-1 to bow and accept the mayor 's , israel 's , demands
+1 to bow and accept the mayor's , israel's , demands
 0 slams
 0 the fabric of compassion tore
 0 some questionable aspects
@@ -1762,7 +1762,7 @@
 0 suspected
 0 spewed out
 1 an unambiguous message
-0 right wing
+0 right - wing
 1 has been praised
 0 cleaved the rift between civilisations
 1 which is the equivalent of respect for democracy
@@ -1786,7 +1786,7 @@
 0 nibbling
 0 pretence of a vicious war
 1 most audacious
-0 anti israeli decisions
+0 anti - israeli decisions
 0 bitterly fought
 0 no longer works
 0 chanted
@@ -1852,7 +1852,7 @@
 1 all join in
 0 protests
 0 an ``axis of evil
-0 devil 's empire
+0 devil's empire .
 1 demand
 0 cowed
 1 caution
@@ -1909,7 +1909,7 @@
 0 inhumane
 0 repudiates
 0 appears to be sidestepping the conventions
-0 without belt tightening there is no money , and without money there is no belt tightening
+0 without belt - tightening there is no money , and without money there is no belt - tightening
 0 threat
 0 would improve
 0 wants to speak the language of violence
@@ -1935,7 +1935,7 @@
 0 concerns
 0 has denounced
 0 by fraud
-0 over financed
+0 over - financed
 1 independent
 0 needed to be wiped out
 1 legitimate
@@ -1961,7 +1961,7 @@
 0 not true at all
 1 should not be afraid of persecution
 1 young old man
-0 so called stop over tactic
+0 so - called stop - over tactic
 0 higher than any time in the past several hundred thousand years
 0 as if it was a greek cypriot republic
 0 has escalated wildly
@@ -1990,7 +1990,7 @@
 1 pass up the biggest chance of his political life
 0 potential problem
 1 grateful
-1 legitimate self defence
+1 legitimate self - defence
 1 hoped
 0 greatest fear
 0 not satellites
@@ -2070,7 +2070,7 @@
 0 claim
 0 chilly
 1 wanted
-0 anti iran reports
+0 anti - iran reports
 0 feel
 0 seriously flawed
 0 refused
@@ -2122,7 +2122,7 @@
 0 new political perspective
 0 were suspected of
 1 victory
-0 trying to re assert neocolonial rule
+0 trying to re - assert neocolonial rule
 0 voiced his concern
 0 an axis of evil
 0 apparent contradiction
@@ -2138,7 +2138,7 @@
 0 seriously hindered
 0 risks
 0 changed the warning
-0 classic gas guzzler
+0 classic gas - guzzler
 0 it violates the rule of law
 1 held out an olive branch
 1 widely popular
@@ -2178,7 +2178,7 @@
 0 were fears
 1 support
 0 came forward opposing
-0 turned out to be a fair weather friend
+0 turned out to be a fair - weather friend
 1 calm
 1 transparent , credible , free and fair
 0 imperil
@@ -2244,7 +2244,7 @@
 0 concern
 0 grand strategy to target
 1 more interested
-0 sustained government orchestrated campaign of intimidation and violence
+0 sustained government - orchestrated campaign of intimidation and violence
 1 agreed
 1 welcome
 0 have also condemned
@@ -2261,10 +2261,10 @@
 0 greatest burden
 0 suffered
 1 a historic success
-0 which is beyond bush 's imagination
+0 which is beyond bush's imagination
 0 it had all been in vain
 0 growing unrest
-0 it 's hard to imagine
+0 it's hard to imagine
 0 leaks
 1 was a gift
 1 reckon
@@ -2340,8 +2340,8 @@
 0 this country can only be dragged along , but wo n't get anywhere
 0 grudgingly
 0 will not be able lay claim to a worthy place in the civilized world
-0 the last supper it is zanu pf 's final feast
-0 extra judicial liquidations
+0 the last supper - - it is zanu - pf's final feast
+0 extra - judicial liquidations
 1 safeguarding
 1 firm national palestinian rights
 1 supported
@@ -2369,7 +2369,7 @@
 1 expressed satisfaction
 0 mired in
 0 lump
-1 are strengthening his country 's appetite for a public campaign for change
+1 are strengthening his country's appetite for a public campaign for change
 0 accused
 0 have no grasp
 1 backing
@@ -2435,7 +2435,7 @@
 1 victory of democracy
 0 declined to endorse
 0 yet
-0 baby faced
+0 baby - faced
 1 wishes to state
 1 used to boast
 1 quite good
@@ -2485,7 +2485,7 @@
 0 spent their leisure time back in afghanistan skinning captives alive
 0 lost their illegitimate interests
 0 repeated warnings
-0 marred by state sponsored violence
+0 marred by state - sponsored violence
 0 way below
 0 are extremely concerned
 0 refusing
@@ -2500,11 +2500,11 @@
 1 ideals
 0 would be forced
 0 such concerns
-0 anti bush hot winds
+0 anti - bush hot winds
 1 as quickly as possible
 1 can be bought cheaper
 1 work hard and with honesty
-0 evil doers
+0 evil - doers
 0 as an act of submission
 1 more impossible than ever
 0 a rising tide of international criticism
@@ -2525,7 +2525,7 @@
 0 pessimistic
 1 will be successful in their work
 0 the cia would organize coups and assassinations to further us interests
-0 the short lived interim president , boss of bosses
+0 the short - lived interim president , boss of bosses
 1 have triumphed
 0 his hands would be empty
 1 spirit of cooperation and understanding
@@ -2539,7 +2539,7 @@
 0 manipulation of the subject domestically
 0 axis of evil theory
 0 proof that international law protects human beings
-0 so called
+0 so - called
 0 break' the spirit of
 0 the need for a major revision
 1 holds so dear to his heart
@@ -2581,7 +2581,7 @@
 0 staged
 0 very regrettable
 0 the israeli criminals of war
-0 state sponsored
+0 state - sponsored
 0 it is itself the violator of human rights
 0 frustration
 1 celebrated
@@ -2614,7 +2614,7 @@
 0 worried
 0 was resisted
 0 usually committed
-1 will work non stop
+1 will work non - stop
 0 axis of evil
 0 feared by
 0 will contaminate
@@ -2635,7 +2635,7 @@
 0 through a crafty ruse
 1 will have to withdraw
 1 may god be satisfied with him
-1 short term pains will eventually pass
+1 short - term pains will eventually pass
 0 impossible to maintain
 0 produces an illegitimate outcome
 0 show a country on the verge of a civil war
@@ -2670,7 +2670,7 @@
 0 difficulties as being insurmountable
 0 did not lift a finger
 0 tear its members apart
-0 i 'd hate to see who got second place
+0 i'd hate to see who got second place
 0 the same unilateral policy
 1 supported
 0 terrorists
@@ -2694,7 +2694,7 @@
 1 the legitimacy
 0 unfortunately
 0 aligned themselves
-0 the sound of explosions from 7 ton bombs
+0 the sound of explosions from 7 - ton bombs
 0 the solidity of this argument , though , has increasingly been demolished
 0 the sphere of its domination
 1 extensive support
@@ -2717,9 +2717,9 @@
 1 arguing
 0 is travelling too much
 0 there is no scope for such madness
-0 that 's ridiculous
+0 that's ridiculous
 0 protest
-1 true reflection of the people 's will
+1 true reflection of the people's will
 0 as exaggerated
 0 axis of evil
 1 brilliant
@@ -2758,7 +2758,7 @@
 0 hegemonic
 0 categorized
 1 strategic importance
-0 was nothing more than a sick attempt to appeal to the worst red neck prejudices
+0 was nothing more than a sick attempt to appeal to the worst red - neck prejudices
 0 and punish those guilty
 0 manipulation
 1 hope
@@ -2796,7 +2796,7 @@
 0 dangerous flashpoint
 0 would not support
 0 have shown reluctance
-0 other so called civilized nations
+0 other so - called civilized nations
 0 biased
 1 proposal to reunify
 0 plotting
@@ -2811,7 +2811,7 @@
 0 mixed
 1 will help
 0 incommunicado detentions
-0 x ray prison camp
+0 x - ray prison camp
 0 nothing was done to prevent the disaster awaiting
 0 thus
 0 axis of evil argument
@@ -2838,7 +2838,7 @@
 0 catastrophe
 0 noted critically
 1 left behind
-0 so called truths
+0 so - called truths
 0 shameful electoral sham
 0 never stopped to consider
 0 should criticize
@@ -2864,7 +2864,7 @@
 0 deliberately withholding food
 1 were even more full of praise
 0 straighten this mess out
-0 says it should have a free hand to storm the palestinian areas assassinate or arrest palestinian citizens demolish homes , headquarters , and establishments uproot thousands of trees and besiege cities and villages as it likes
+0 says it should have a free hand to storm the palestinian areas ; . assassinate or arrest palestinian citizens ; . demolish homes , headquarters , and establishments ; . uproot thousands of trees ; . and besiege cities and villages as it likes
 0 anxiety
 1 active role
 1 favorably describing
@@ -2895,7 +2895,7 @@
 0 illusory
 1 zimbabwe is for zimbabweans
 0 protested
-0 non white anglo saxon protestant humanity
+0 non - white anglo - saxon - protestant humanity
 1 has vowed
 0 hegemonic and belligerent policy
 0 either you are with us or you are with the terrorists
@@ -2905,11 +2905,11 @@
 0 if a rocket launch fails
 0 excessive or at the wrong time
 0 openly opposed
-0 excess self confidence
+0 excess self - confidence
 0 some doubts
 1 won the assurance
 0 intense interrogation
-0 which means an indefinite suspension from the commonwealth , a ban on travel for mugabe 's cronies and to freeze their personal assets
+0 which means an indefinite suspension from the commonwealth , a ban on travel for mugabe's cronies and to freeze their personal assets
 0 one of the most dangerous places on earth
 1 reassurances
 1 to be invited
@@ -2952,7 +2952,7 @@
 0 criticism
 1 excellent opportunity
 0 neutralized , heterogeneous , impatient and politically immature opposition
-0 world 's policeman
+0 world's policeman
 0 by applying the pressure cooker effect
 0 have been cool
 0 think
@@ -2995,7 +2995,7 @@
 1 believes in
 0 instigating
 1 champion
-0 attempts to use the anti terror war to play with political party politics
+0 attempts to use the anti - terror war to play with political party politics
 0 concern
 0 unlawful combatants
 0 concerned
@@ -3059,7 +3059,7 @@
 0 for months
 1 further push forward
 0 want to sweep aside all competitors from other countries
-0 ever deteriorating
+0 ever - deteriorating
 0 apparently not
 0 rejection
 0 sacrificing
@@ -3075,7 +3075,7 @@
 1 chose
 1 expand peace and security
 1 can bring security and stability to all the parties without exception
-1 nor will mr stoiber have any illusions
+1 nor will mr . stoiber have any illusions
 0 impinge
 0 lost the game
 0 degeneration of the democratic process
@@ -3110,7 +3110,7 @@
 1 was seen
 0 does not want anything to do with
 0 infuriated
-0 whoever says that these are small steps is incapable of recognizing the european union 's experience
+0 whoever says that these are small steps is incapable of recognizing the european union's experience
 0 meddling
 1 furiously lobby
 0 harm is not limited to the incident itself
@@ -3125,7 +3125,7 @@
 0 hype
 0 break the spirit of
 0 wrote
-1 ever improving
+1 ever - improving
 0 sharp divisions
 0 concerns
 0 has rejected
@@ -3156,7 +3156,7 @@
 1 hope
 0 attitude
 1 strong support expressed
-0 so far spurned
+0 so - far spurned
 0 several occasions
 0 second only to the terrorism itself
 0 even more dismal
@@ -3185,7 +3185,7 @@
 0 this is bullshit
 0 charged
 1 absolutely the right thing to do
-0 israeli right wing policies
+0 israeli right - wing policies
 0 assassins , assassins , assassins
 1 opinion was solidly behind
 0 will complain
@@ -3211,10 +3211,10 @@
 0 should not tolerate
 0 denunciation
 0 claiming
-0 government orchestrated
+0 government - orchestrated
 0 repeated denunciations
 1 preservation of democracy and human rights
-0 self styled
+0 self - styled
 1 enhance
 0 poor
 1 satisfactory
@@ -3225,12 +3225,12 @@
 0 rope in
 1 victory
 0 be difficult
-0 it 's really strange
+0 it's really strange
 0 refused to grant
 0 resorting exclusively to
 0 objects
 1 will not do or say anything that could damage
-0 so called
+0 so - called
 1 to encourage
 0 concentration camp
 1 support
@@ -3253,9 +3253,9 @@
 0 its own inhuman behavior
 1 readiness to facilitate
 0 alone is overwhelming
-0 pre attack marker
+0 pre - attack marker
 0 do n't support
-0 rip off
+0 rip - off
 0 vague
 0 was mistreating its hostages
 0 a hostile nation
@@ -3276,7 +3276,7 @@
 0 worry
 1 stability and peace
 0 gaffe
-0 ala fidel castro left leaning anti american philosophy
+0 ala fidel castro left - leaning anti - american philosophy
 0 in death rather than staying alive under occupation
 0 declined
 1 respecting
@@ -3341,7 +3341,7 @@
 1 long urged
 0 suffer the consequences of its own economic mismanagement
 1 think
-0 non wasp humanity
+0 non - wasp humanity
 0 accused
 0 steering the economy into disaster
 1 successes
@@ -3362,8 +3362,8 @@
 1 want
 0 spoke arrogantly , humiliatingly , aggressively
 0 opposition
-0 anti democractic
-0 so called
+0 anti - democractic
+0 so - called
 0 breeds insecurity
 0 the claim
 0 accusing
@@ -3404,7 +3404,7 @@
 0 swallowing
 0 obsession with
 0 the problem was disposed of in two hours
-0 appears to be another faith based initiative we should have faith that major corporations will line up to volunteer
+0 appears to be another faith - based initiative : we should have faith that major corporations will line up to volunteer
 0 would beg for surrender
 1 wants to create
 1 expand constructive and cooperative relations
@@ -3448,7 +3448,7 @@
 0 warned
 0 increasingly angry
 0 american imperialists
-0 according to washington 's claim
+0 according to washington's claim
 0 premature
 1 unambiguous commitment
 1 good will
@@ -3462,7 +3462,7 @@
 0 should not be used to justify
 0 almost collapsed
 1 appreciates
-1 we 're going to find a way around it
+1 we're going to find a way around it
 1 would not be harmed
 1 supports
 0 will be forced
@@ -3553,7 +3553,7 @@
 1 hope
 0 warned
 1 wants to push ahead
-0 the most shameful detentions in the history of post war incarceration in the 21st century
+0 the most shameful detentions in the history of post - war incarceration in the 21st century
 0 insufficient
 0 isolation
 1 enthusiastically asked
@@ -3609,7 +3609,7 @@
 0 keeping a wary eye
 0 radicalize the palestinians even further
 1 we should remain calm
-1 should help put people 's minds at ease
+1 should help put people's minds at ease
 0 dire possible consequences
 0 than they deserve
 0 caused shudders
@@ -3657,7 +3657,7 @@
 0 bad decision
 0 enormous concern
 1 pretended to support
-0 they 're terrorists , they 're murderers
+0 they're terrorists , they're murderers
 0 rejected
 0 drove the imf even further away
 0 reverted
@@ -3769,7 +3769,7 @@
 0 are bracing
 1 fully supports
 0 high time
-1 pre eminently a nation of laws
+1 pre - eminently a nation of laws
 0 cut any routes
 0 stalemate
 0 suffering of iraqi people facing crippling international sanctions
@@ -3779,7 +3779,7 @@
 0 ulterior motives
 0 the desperate fight
 0 a power vacuum
-0 so there 'll be more and more poor people
+0 so there'll be more and more poor people
 0 deserve justice and to be treated as war criminals
 1 interest
 0 did not sound the alarm in time
@@ -3808,13 +3808,13 @@
 0 systematic campaign of violence and intimidation
 0 blaming
 0 contrary to
-0 raise denmark 's voice
+0 raise denmark's voice
 1 felt gratified and relieved
-0 has eroded the government 's ability
+0 has eroded the government's ability
 0 were highly critical
 0 has fallen on stones
 0 discourage
-0 although , of course , these super rigid activities are to a great extent warranted
+0 although , of course , these super - rigid activities are to a great extent warranted
 0 flagrant attack
 1 just , legitimate rights
 0 categorically rejecting
@@ -3857,7 +3857,7 @@
 1 congratulations
 0 legitimate rejection
 0 islands will go under
-1 soul searching gratitude
+1 soul - searching gratitude
 0 concerns
 0 an axis of evil
 0 plotting
@@ -3869,7 +3869,7 @@
 0 there are a few ambiguous points
 1 safeguard peace and security
 0 thanks to a deft mix of populist policies , nationalist rhetoric , and political patronage
-0 the embodiment of two sided justice
+0 the embodiment of two - sided justice
 1 very warm
 0 provoked much criticism
 1 has now made himself heard
@@ -3880,7 +3880,7 @@
 1 have accepted
 0 snaps
 0 treating these prisoners like an ostrich
-1 would not hurt taiwan 's interests
+1 would not hurt taiwan's interests
 0 confidence in it is waning
 0 may not
 0 the complaint
@@ -3895,7 +3895,7 @@
 1 endorsed
 0 suspected
 1 fair shares
-1 for his contribution to science and africa 's renaissance
+1 for his contribution to science and africa's renaissance
 0 perils of delusion
 0 fell out
 1 highly appreciated
@@ -3927,7 +3927,7 @@
 1 defends
 0 holding things up to hurt his chances
 0 compliant
-1 have been same \( consistent \)
+1 have been same ( consistent )
 1 hailed
 1 is determined
 0 condemn
@@ -3945,7 +3945,7 @@
 1 call on
 1 will hopefully
 0 charges of
-0 hard line
+0 hard - line
 0 should be tried by an international tribunal
 0 worry
 0 at a loss
@@ -3980,7 +3980,7 @@
 0 has accused
 1 far preferable
 0 abuse its position
-1 venezuela 's friends
+1 venezuela's friends
 0 failed the 'free and fair' test
 0 could not take any risk of ruffling the republicans
 1 rubbed their palms at length
@@ -4009,12 +4009,12 @@
 1 is after imposing
 0 believe
 0 resistance against
-1 something special , as god 's own country
+1 something special , as god's own country .
 0 meant to intimidate
 1 gave their thumbs up
 1 a number of excellent
 0 never
-0 koizumi say 'no' to bush stick to kyoto protocol
+0 koizumi say 'no' to bush : stick to kyoto protocol
 0 involves some contradictions
 0 ruined
 1 legitimate rights
@@ -4073,7 +4073,7 @@
 1 promote
 1 to accept
 0 inhumane and degrading
-1 simply clear headed
+1 simply clear - headed
 1 offered
 0 accusing
 0 political warning must be heeded
@@ -4081,7 +4081,7 @@
 0 the united states' biggest enemy
 0 the action of several military generals
 0 warned
-0 do n't mean that 's so
+0 do n't mean that's so
 0 view
 0 criticism of
 0 will not succeed
@@ -4115,7 +4115,7 @@
 0 bellowing
 0 if there are problems
 1 unwavering will
-0 at the expense of the world 's security and stability
+0 at the expense of the world's security and stability
 1 legitimate and competent
 0 alleged
 0 joining the fray
@@ -4127,17 +4127,17 @@
 0 failing to be free and fair
 1 approval
 0 but will also disrupt
-0 may squander the american taxpayer 's money
+0 may squander the american taxpayer's money
 1 transparent , credible , free and fair
 1 great
 0 snapped at
 0 criticize
 0 rally
-0 seems to be determined to expand the scope of the anti terror war
+0 seems to be determined to expand the scope of the anti - terror war
 0 to fight
 1 much fairer
 1 considerable respect
-0 damaging to the state 's interests
+0 damaging to the state's interests
 1 among the countries that have pledged
 0 too costly to meet
 0 undemocratic
@@ -4164,7 +4164,7 @@
 0 without
 0 code of not publicly criticizing
 0 frighten tourists and investors away
-1 clear self restraint and abidance
+1 clear self - restraint and abidance
 0 anything goes
 0 not immediately denouncing
 0 dropping
@@ -4226,7 +4226,7 @@
 0 telling
 0 contravenes
 0 will certainly eat their own bitter fruit
-0 if you 're not with us , you 're against us
+0 if you're not with us , you're against us
 1 a number of useful applications
 1 is of the opinion
 1 supporters
@@ -4274,12 +4274,12 @@
 1 rallies for solidarity
 0 opposition
 0 is pessimistic
-0 fraud tainted
+0 fraud - tainted
 1 undivided support
 0 seething with anger
 0 impossible to achieve coexistence
-0 anti soviet hysteria
-0 so called
+0 anti - soviet hysteria
+0 so - called
 0 axis of evil
 0 very serious
 1 eventually offered talks
@@ -4303,7 +4303,7 @@
 0 object
 0 clear and do not need further clarification or explanation
 0 axis of evil remark
-0 badly shaking \( their \) faith in
+0 badly shaking ( their ) faith in
 0 has rejected
 0 it is the united states that is threatening
 0 the criticisms
@@ -4330,21 +4330,21 @@
 0 will have to pour a lot of money
 0 arrest
 0 botched coup
-0 what is left of the army 's reputation
+0 what is left of the army's reputation
 1 israel would gain peace and security
 1 equal footing
 0 to raise the problem
-1 de escalation
+1 de - escalation
 1 had been legitimate
 0 criticism was toned down greatly
-0 a petty minded populist who had done great damage to his country 's economy
+0 a petty - minded populist who had done great damage to his country's economy
 0 picked a quarrel
 0 chanted
 0 axis of evil
 0 played the same tactic again
 0 had caused the demise
 0 developing weapons of mass destruction
-0 day one brian decides it 's finally time to learn how to diaper the baby
+0 day one : brian decides it's finally time to learn how to diaper the baby
 1 swore allegiance
 0 all the more to be deplored
 1 lent credibility
@@ -4499,7 +4499,7 @@
 0 axis of evil
 1 preferred
 0 slams
-1 unlike the cold war , is rid of the north south confrontation
+1 unlike the cold war , is rid of the north - south confrontation
 1 pursued
 0 impeding
 0 did not even have the goodness
@@ -4583,7 +4583,7 @@
 0 another example
 0 knock
 0 evil
-1 neo colonialist
+1 neo - colonialist
 1 favored
 0 might agree
 0 long neglected
@@ -4609,8 +4609,8 @@
 0 how can
 0 desperate means
 0 position and particular stance opposed to
-1 maintains the commonwealth 's credibility
-1 epoch making
+1 maintains the commonwealth's credibility
+1 epoch - making
 0 particularly affected would be
 1 have the right
 0 unfeasible
@@ -4623,11 +4623,11 @@
 1 want
 0 failed
 1 perhaps the international community is right
-0 if one goes by the us logic , only the us spy plane is permitted to spy at other people 's doorsteps
+0 if one goes by the us logic , only the us spy plane is permitted to spy at other people's doorsteps
 0 misrule
 0 as if our country had a human rights problem
 0 irrelevant
-0 oic eu front against the united states
+0 oic - eu front against the united states
 0 protests
 0 very despicable act
 0 shouted
@@ -4635,7 +4635,7 @@
 0 has failed for a decade now
 1 was important
 0 terrorists
-0 shift loosely between the u s polity and people
+0 shift loosely between the u . s . polity and people
 1 victory
 0 actually went far enough
 0 no one is listening
@@ -4653,7 +4653,7 @@
 1 calls for
 1 to accept
 0 find itself an outcast of
-0 so called
+0 so - called
 0 the evil empire
 0 appeared surprised
 0 cast away the chance
@@ -4677,7 +4677,7 @@
 1 expressed admiration and surprise
 0 craving for blood
 1 god is their only hope
-0 war mongering
+0 war - mongering
 0 criticism
 0 thought
 0 does not look very good
@@ -4701,9 +4701,9 @@
 0 will have sown the seed
 1 would help
 1 peace and stability and prosperity
-0 empty handed
+0 empty - handed
 1 kept peeking
-0 you 're
+0 you're
 0 warned
 0 eroding
 0 should be condemned
@@ -4729,7 +4729,7 @@
 0 axis of evil
 0 the point
 0 chaotic
-0 pro opposition
+0 pro - opposition
 0 provocations
 0 plausible pretext
 0 aperitif for the probable democratic coup
@@ -4777,7 +4777,7 @@
 0 was quite neat and tidy
 0 to express openly dissenting political and religious views
 1 openly invited
-0 him in so ferocious an image wearing a t shirt and jogging pants bearing some english letters , baring his teeth and with a glare of hatred in his eyes
+0 him in so ferocious an image wearing a t - shirt and jogging pants bearing some english letters , baring his teeth and with a glare of hatred in his eyes
 0 warning
 0 memorandum of protest
 0 repetitive
@@ -4802,7 +4802,7 @@
 0 not intent on revitalizing its economies
 0 openly took issue
 1 legitimacy
-0 breast beating
+0 breast - beating
 0 arrest thousands of innocent people
 0 threaten to compromise
 0 protests
@@ -4820,7 +4820,7 @@
 0 to blame
 1 great leader
 0 ruinous mistake
-0 to the president 's misfortune
+0 to the president's misfortune
 1 more civilized
 0 conducting a calculated campaign of intimidation
 0 systematic campaign of violence
@@ -4828,7 +4828,7 @@
 1 appreciation
 0 main cheating
 1 oozed confidence
-0 will make it look as if they 're being brutalized
+0 will make it look as if they're being brutalized
 0 like any form of state terrorism
 1 relatively prosperous and free
 0 has refused to make any statements
@@ -4847,7 +4847,7 @@
 0 criticized
 1 would create
 0 refuse
-1 venezuela 's constitutional president
+1 venezuela's constitutional president
 0 fearing
 0 claims of
 0 as difficult as it may be
@@ -4856,7 +4856,7 @@
 0 are disturbed
 0 possible excesses and violations of rights
 0 the blind and murderous rage of a defeated colonial power
-0 ever increasing us influence
+0 ever - increasing us influence
 0 fearing
 1 the approval by
 1 support
@@ -4877,7 +4877,7 @@
 1 legitimate
 1 pronounced
 1 is confident
-0 so called axis of evil remark
+0 so - called axis of evil remark
 1 welcome
 0 nevertheless
 1 more clearly
@@ -4935,7 +4935,7 @@
 0 a decade of dramatic economic decline
 0 facing an acute dilemma
 0 questionable
-0 will have no universally acknowledged
+0 will have no universally - acknowledged
 0 must not use double standards
 0 violates
 0 inaccurate
@@ -4981,7 +4981,7 @@
 0 alarming
 0 before it disappears
 0 betrayal
-1 serious , calm and forward looking
+1 serious , calm and forward - looking
 0 enemies of venezuela
 0 deteriorating
 0 gravity
@@ -5031,7 +5031,7 @@
 0 phenomenon
 1 recognition
 0 seems content to be back home on the rock playing with his bag of marbles and collecting his parliamentary pension
-0 despite israel 's provocations
+0 despite israel's provocations
 0 particularly disturbed
 1 might have been more controllable then
 0 unexpectedly tough
@@ -5045,7 +5045,7 @@
 0 hints of war
 0 give or take a trillion
 0 kept things vague
-0 it 's not a bad deal
+0 it's not a bad deal
 0 were dismissed
 0 warned
 1 upgraded
@@ -5071,9 +5071,9 @@
 0 not try to change the world by command
 0 humiliation
 1 preferred
-0 introduce the rioters to their 72 black eyed virgins
+0 introduce the rioters to their 72 black - eyed virgins
 0 markedly different
-0 resumed their anti american tirade
+0 resumed their anti - american tirade
 0 does not desire
 0 injudicial shootings
 1 desire
@@ -5136,13 +5136,13 @@
 1 aspirations
 0 devastating consequence
 0 draw vindictive reactions
-0 seem logical
+0 seem logical .
 0 as bad as the prospects of change seem to be
 0 indirectly criticised
 0 opposed
 0 arrogant
 0 are willing to die
-0 wait and see
+0 wait - and - see
 0 voices criticizing
 0 fails
 0 of course
@@ -5156,7 +5156,7 @@
 1 more quickly
 1 suppress fury
 0 balkanisation
-0 stand off
+0 stand - off
 0 have been rubbed on her skin
 1 useful
 0 evil country
@@ -5165,7 +5165,7 @@
 1 am hopeful
 0 to respect or recognise
 0 turning a blind eye
-1 democracy , transparency , and corruption free system
+1 democracy , transparency , and corruption - free system
 0 denied
 1 hoping
 0 gulf between
@@ -5186,8 +5186,8 @@
 0 drive him away
 0 demonstrations and rallies against
 1 be happy
-1 has revealed george bush 's talents as a war leader
-1 it 's over
+1 has revealed george bush's talents as a war leader
+1 it's over
 0 just not possible
 0 unreasonable
 0 not honest about championing
@@ -5235,8 +5235,8 @@
 1 invite
 0 denunciation
 0 is being accepted for the present without much complaint
-1 expression of mankind 's progress
-1 came to anderson 's support
+1 expression of mankind's progress
+1 came to anderson's support
 1 endorsed
 0 same as before
 1 support
@@ -5254,7 +5254,7 @@
 0 strong protest and denunciation
 0 accusations
 0 at one speed or another
-0 sabre rattling
+0 sabre - rattling
 1 constitutionally acceptable
 1 calls for
 0 would totally liberalize
@@ -5263,19 +5263,19 @@
 1 greater elaboration
 0 worst
 1 can actually enhance our competitiveness
-1 well meaning
+1 well - meaning
 0 the branding
 1 support of
 0 is insisting
 1 was not against helping
 1 promises
 0 is intolerant
-0 in a limp cruise director chirp
+0 in a limp cruise - director chirp
 1 that concessions are sufficiently concrete
 0 muslim fanatics
 0 criminals
 0 will fight on
-0 sabre rattling
+0 sabre - rattling
 0 is succeeding
 0 number one country
 1 concrete support from
@@ -5302,7 +5302,7 @@
 1 as a patient
 0 antics
 0 loved
-1 until ex president carlos menem changed course
+1 until ex - president carlos menem changed course
 0 anger
 1 appraised
 0 threatened
@@ -5405,7 +5405,7 @@
 0 the way washington is treating these prisoners
 1 massive potential market
 0 violent protests
-0 war mongering
+0 war - mongering
 0 odious
 0 intervention of domestic affairs
 1 says with a bright smile
@@ -5479,7 +5479,7 @@
 0 corrupt politicians
 0 evaporated quickly
 1 want
-0 pent up opposition
+0 pent - up opposition
 1 admires
 0 abuses
 1 called on
@@ -5513,7 +5513,7 @@
 0 axis of evil remark
 0 marched against
 1 frantically making efforts
-0 being power hungry
+0 being power - hungry
 0 part of an axis of evil any country which does not follow the its policies
 0 sad
 0 will remove you violently
@@ -5658,7 +5658,7 @@
 0 desperate
 0 chaos
 1 stand beside right and justice
-0 resolve the smaller israel palestine problem with a bigger one
+0 resolve the smaller israel - palestine problem with a bigger one
 1 good negotiator
 1 favored
 0 misery
@@ -5675,7 +5675,7 @@
 0 mandatory
 1 back on track
 0 emptiness
-0 disturbingly long term
+0 disturbingly long - term
 0 strongly criticized and condemned
 0 would not accept
 1 democratic
@@ -5687,7 +5687,7 @@
 0 preposterous
 0 zealots
 1 resistance
-1 maintained a clear cut collaborative stance towards
+1 maintained a clear - cut collaborative stance towards
 1 wanted
 0 have n't always been consistent
 0 the further
@@ -5700,7 +5700,7 @@
 1 recalling
 0 have made every israeli an enemy and a target
 1 could hardly hide his excitement
-0 neo colonial
+0 neo - colonial
 1 preference
 1 defended
 0 criticism from
@@ -5728,7 +5728,7 @@
 1 interested
 1 support
 0 usurping , occupying , aggressive , and racist entity
-0 will surely be on the president 's lips
+0 will surely be on the president's lips
 0 ban on holidays and a golden retirement
 0 oh , the horror
 0 particularly frequently and unceremoniously
@@ -5744,7 +5744,7 @@
 1 insists
 0 the danger
 0 menace
-0 desperate last minute act
+0 desperate last - minute act
 0 deep social polarization
 1 hold
 1 set priorities
@@ -5760,8 +5760,8 @@
 1 is pleased
 0 no alternative
 0 questioned
-0 hard line wing
-1 pretty well planned out
+0 hard - line wing
+1 pretty well - planned out
 0 protests
 0 more severe
 1 bear this patiently
@@ -5775,12 +5775,12 @@
 0 disapproves
 1 who are highly respected within the society
 0 are agitating
-0 instead stay at the ritz carlton
+0 instead stay at the ritz - carlton
 0 orders stretching all the way back to the oval office
 0 refused to allow
 0 only becoming worse
 0 keep a distance from america
-0 threatening the world 's peace
+0 threatening the world's peace
 0 mutiny
 1 had assured
 1 not only just
@@ -5817,9 +5817,9 @@
 1 wish to influence
 0 onslaught of the international credit vultures
 0 will not
-0 so called
+0 so - called
 1 expressed the hope
-1 long term interest
+1 long - term interest
 0 creating the fertile soil
 1 will tend to disappear
 1 cooperate
@@ -5866,7 +5866,7 @@
 0 mistrust
 1 successfully rallied
 0 other aggressive acts against lebanon
-0 the u s government ``is the source of evil'' in the world
+0 the u . s . government ``is the source of evil'' in the world
 1 succeed
 0 hesitated
 1 adequate
@@ -5912,7 +5912,7 @@
 1 backing
 1 hope
 0 concern
-0 one sided
+0 one - sided
 1 sufficiently patriotic
 0 commitments
 0 warned
@@ -5967,7 +5967,7 @@
 0 he must think he can defy gravity
 1 preferred
 1 advice
-0 so called
+0 so - called
 0 slowly growing weaker
 1 committed
 0 had also been criticised
@@ -5994,7 +5994,7 @@
 1 all was not lost
 0 all the mighty
 0 strong perception
-1 cost effective
+1 cost - effective
 0 considers
 0 serious
 0 signaling a toughening policy
@@ -6006,7 +6006,7 @@
 1 regarded
 1 will be able to achieve balanced economic growth
 0 resentment
-0 blinding eyeglasses , masks incapacitating the mouth and nose , ear splitting ear phones
+0 blinding eyeglasses , masks incapacitating the mouth and nose , ear - splitting ear phones
 0 to the detriment of brazil
 1 can be stabilized
 0 his less illustrious colleagues
@@ -6019,14 +6019,14 @@
 0 was martyred
 0 significant
 0 allow
-0 arm twist
+0 arm - twist
 0 get a life
-0 if unexpected incidents took place to arafat 's safety
+0 if unexpected incidents took place to arafat's safety
 1 totally reasonable
 0 were immediately contested
 1 a top priority
 1 greater
-0 as a non starter
+0 as a non - starter
 0 murderous thugs
 0 product of `western biased
 0 nettlesome challenge
@@ -6035,7 +6035,7 @@
 1 favorable opinions
 0 understand
 0 be smooth either
-0 the world 's biggest exporter
+0 the world's biggest exporter
 0 would not be out of necessity
 1 to win
 0 very odd
@@ -6073,7 +6073,7 @@
 0 agreement
 1 invited
 1 comforting sense of personal and national vindication
-0 are not to be treated like those jailed by the u s
+0 are not to be treated like those jailed by the u . s .
 1 support
 0 impossible
 0 constitute a serious insult
@@ -6141,7 +6141,7 @@
 1 did away with the discrimination that had existed for years
 0 despite all of this , however
 0 serious division
-0 anti western
+0 anti - western
 0 imposed on the palestinian people by force for more than 34 years now
 0 hard to find a justification
 0 has no chance of living and developing peacefully
@@ -6170,7 +6170,7 @@
 0 only possible definition will be torture and the violation of human rights
 0 appeared it had been done reluctantly
 0 fears
-1 the fatherland 's reunification
+1 the fatherland's reunification
 1 must first respect and promote
 0 overreacting
 1 stands on the side of justice
@@ -6180,12 +6180,12 @@
 0 rapprochement between
 0 only too aware
 0 as if not enough
-1 it is mr stoiber
+1 it is mr . stoiber
 0 may not be feasible
 1 beneficial
 0 vicissitudes
 0 adopt an aggressive policy
-0 destroy so called peace
+0 destroy so - called peace
 1 is based on mutual respect and understanding
 0 joined in a giant protest
 0 lead to questions
@@ -6194,7 +6194,7 @@
 0 power at all costs
 0 killing of a large number of innocent civilians
 1 pleasing it is to my own ears
-0 it 's shameful
+0 it's shameful
 1 free and fair
 1 it is true
 0 is accusing
@@ -6239,7 +6239,7 @@
 0 wronged
 1 recognition
 0 has concerned
-0 as notorious as devil 's island
+0 as notorious as devil's island
 0 deems
 0 did not succeed
 1 cooperation
@@ -6328,7 +6328,7 @@
 0 doubly difficult
 0 the most destructive weapons
 1 timely
-0 seizes a weeping globe in his monster size hands
+0 seizes a weeping globe in his monster - size hands
 1 agreement or understanding
 0 warned
 0 artificial obstacles
@@ -6377,14 +6377,14 @@
 1 am pleased
 0 not satisfied
 0 intimidation
-0 responsible for zimbabwe 's crisis
-1 smooth flowing
+0 responsible for zimbabwe's crisis
+1 smooth - flowing
 0 alleged
 0 the opposition
 0 to make this government fail
 1 begin to support
 0 can never forget
-1 at least they 're coming out with something
+1 at least they're coming out with something
 0 was seen
 0 gaffe
 0 the problem is
@@ -6436,12 +6436,12 @@
 0 believing
 0 reckless military oppressive attempt
 1 excited
-1 it 's a step in the right direction
+1 it's a step in the right direction
 0 rigged
 0 judgment
 1 seeking
 1 is optimistic
-0 though mr tobin has finally mastered the diapering process , his baby who is 15 years old is not amused
+0 though mr . tobin has finally mastered the diapering process , his baby who is 15 years old is not amused
 1 could n't wait
 0 axis of evil
 0 concerns
@@ -6490,7 +6490,7 @@
 0 would possibly forfeit all recent efforts
 1 endorsed
 1 needs to cooperate
-0 is a telling example of a new and perhaps risky approach
+0 is a telling example of a new - and perhaps risky - approach
 1 legitimate
 0 greenpeace is here to voice the concerns of millions of people
 1 want
@@ -6640,13 +6640,13 @@
 0 declined
 1 want
 1 support
-0 tin pot tyrant
+0 tin - pot tyrant
 0 they want to hold us hostage
 0 complete and blind bias toward israel
 1 want
 1 mdc sympathies
 0 adverse report
-1 common sense
+1 common - sense
 0 torture and inhuman treatment
 1 failure of
 0 duplicity
@@ -6692,7 +6692,7 @@
 0 very rash
 0 demonstrations
 1 unity
-0 last ditch
+0 last - ditch
 0 writing off
 1 peace
 0 had n't been a good likeness
@@ -6707,7 +6707,7 @@
 1 most interesting
 0 is already under fire
 0 far less than
-0 do it our way
+0 do - it - our - way
 1 endorsed
 0 is craving
 0 position of not recognizing
@@ -6813,7 +6813,7 @@
 0 against
 1 would help stop the country plunging into civil war
 0 as if it were an adjudicator
-1 better than expected response
+1 better - than - expected response
 0 it is inevitable for injustice to meet denunciation and rejection
 0 depends on
 0 rejecting
@@ -6832,11 +6832,11 @@
 0 also failed
 1 called for
 0 policy of terror and death
-1 not subject to the get out of jail escape hatches
+1 not subject to the get - out - of - jail escape hatches
 1 tone down
 0 legally established
 0 protests
-0 threat to france 's ethic and religious minorities
+0 threat to france's ethic and religious minorities
 0 charged
 1 should find it gradually easier
 0 ideological fight against capitalism
@@ -6848,7 +6848,7 @@
 1 breathed a collective sigh of relief
 0 an air of indignation
 0 scepticism and scorn
-0 losing his party 's support
+0 losing his party's support
 1 supporting
 0 policy of provocation
 0 fear of
@@ -6867,7 +6867,7 @@
 0 rejection
 0 does not mean
 1 want
-1 humane , legal , and proper
+1 humane , legal , and proper .
 0 continue to spew out vicious remarks
 0 hardly convincing
 0 was worried
@@ -6875,7 +6875,7 @@
 0 notwithstanding the labyrinth of constitutional provisions loaded against a free and fair election
 0 absurd
 1 improved
-0 threatening long held human rights principles
+0 threatening long - held human rights principles
 0 our usama bin ladin
 1 stressing
 1 spurred on
@@ -6891,7 +6891,7 @@
 0 has angered
 0 to keep yasser arafat stranded
 0 calls
-0 business as usual
+0 business - as - usual
 0 madness
 0 simply do not understand
 1 plotting
@@ -6899,7 +6899,7 @@
 0 settle scores
 0 absolutely not permitted
 0 criticism
-0 the world did not always realize how good they were
+0 the world did not always realize how good they were .
 0 unfair
 1 hold the course of democracy dear
 0 aggressive policy
@@ -6928,7 +6928,7 @@
 0 an implacable force
 0 was particularly disheartening
 0 grieving
-0 voter intimidation , last minute election law changes , and outright fraud
+0 voter intimidation , last - minute election - law changes , and outright fraud
 0 protest
 0 deliberately
 1 asked
@@ -6947,7 +6947,7 @@
 0 toughs
 0 there will be no investments
 0 stolen
-1 chance came to sharon 's rescue
+1 chance came to sharon's rescue
 0 in protest against
 0 entrench
 0 protestations
@@ -6959,7 +6959,7 @@
 0 very , very minimal
 0 dishonoring
 0 heightened concern
-0 heavy handed
+0 heavy - handed
 1 optimists
 1 grand
 1 invited
@@ -7007,7 +7007,7 @@
 0 despite
 0 the biggest concern
 1 will
-0 a valentine 's day gift for the polluters
+0 a valentine's day gift for the polluters
 0 has tended to undermine the growth of a human rights culture
 1 not reproachable
 0 refused to allow
@@ -7015,7 +7015,7 @@
 0 filed a complaint
 0 nor are they
 0 stuck in the middle
-0 the opposition members have a loaded gun at their head with mr mugabe 's fingers on the trigger
+0 the opposition members have a loaded gun at their head with mr . mugabe's fingers on the trigger
 1 want
 0 the public affairs show
 1 the support
@@ -7070,7 +7070,7 @@
 0 hegemony
 0 strongly denounced
 0 concern has spread
-1 pent up demand
+1 pent - up demand
 1 a true ally
 0 to use constitutional methods against chavez
 0 road that leads swiftly to the abyss
@@ -7087,7 +7087,7 @@
 0 grave human rights violators
 0 to create the impression
 1 preservation of global peace and security
-0 fresh meat
+0 fresh - meat
 0 can not choose
 1 appropriate , serious , and worthy measures
 0 dehumanised detainees
@@ -7101,8 +7101,8 @@
 0 feared
 1 a veritable media triumph
 0 unacceptable
-0 so called
-0 so called
+0 so - called
+0 so - called
 0 was perceived
 1 completely from palestinian areas
 0 hypocrisy
@@ -7116,9 +7116,9 @@
 1 patience
 1 to live in friendship and cordiality
 1 protecting
-0 get out !
-0 anti democractic
-0 none of the whistle blowers seems to give a damn
+0 get out ! .
+0 anti - democractic
+0 none of the whistle - blowers seems to give a damn
 0 no qualifications and face
 0 compare
 0 protested against
@@ -7143,7 +7143,7 @@
 0 debate
 0 dangerous
 1 leading role
-0 what is non wasp humanity
+0 what is non - wasp humanity
 0 bitter destruction
 0 take what you can while you can
 0 a lack of transparent investigations
@@ -7152,8 +7152,8 @@
 0 expressed concern
 1 called for
 0 can not be effective
-0 it makes a mockery of george bush 's war against international terrorism
-0 sap the country 's energy
+0 it makes a mockery of george bush's war against international terrorism
+0 sap the country's energy
 0 persistent and deliberate fuelling
 0 opposition
 0 bring the government down in turmoil
@@ -7286,14 +7286,14 @@
 0 was neither free nor fair
 1 nostalgia
 0 rig
-0 so called war against terrorism
+0 so - called war against terrorism
 0 disapprove
 0 near impossible
 0 shook
 1 fully grasp
 0 complaints and inquires
 0 collusive nexus
-0 repeat his father 's mistake
+0 repeat his father's mistake
 0 from british lords down to humble skinheads
 0 expresses condolence , sympathy and solicitude
 0 limits of tolerance
@@ -7305,15 +7305,15 @@
 1 to seek reconciliation
 1 to support
 1 great
-0 world 's most prominent self styled palestinian refugee
+0 world's most prominent self - styled palestinian refugee
 0 will intensify
 1 integral part of the successful formula
 1 credited for
 0 brings no good to world peace and economic development
 0 debatable
 0 believed
-0 not you , sirs and not the one person in 10 downing st , tony blair
-0 one sided , self righteous policy
+0 not you , sirs and not the one person in 10 downing st . , tony blair
+0 one - sided , self - righteous policy
 0 interfere
 0 rather flimsy
 0 violation
@@ -7351,7 +7351,7 @@
 1 coveted
 0 catering to the interests of the us oil and coal barons
 0 possibly even endanger
-0 left has compounded anti americanism into dogma
+0 left has compounded anti - americanism into dogma
 0 has become tense again
 0 counting on
 1 positive responses from
@@ -7425,7 +7425,7 @@
 1 am pleased to send my warm congratulations
 0 thus shattering
 0 be rejected with all determination
-1 more belt tightening
+1 more belt - tightening
 0 are especially critical
 1 seeking
 0 intensified
@@ -7456,7 +7456,7 @@
 0 critical voice in
 0 sneering
 0 has confessed
-0 single handedly destroyed
+0 single - handedly destroyed
 0 communicative compulsions of dancing to the tunes of evocative sound bytes
 0 those who bet on the dollar will lose
 0 has not once
@@ -7464,7 +7464,7 @@
 0 traumatized
 1 had thanked
 0 are outraged
-0 ever subtle
+0 ever - subtle
 0 are wondering
 1 hope
 0 is very concerned
@@ -7530,15 +7530,15 @@
 0 deleted
 0 rigged and unacceptable
 0 in addition to
-0 swapping the silver visored helmet of a space cadet for the green eyeshade of a consummate bean counter
-0 in contravention of the country 's constitution
+0 swapping the silver - visored helmet of a space cadet for the green eyeshade of a consummate bean counter
+0 in contravention of the country's constitution
 0 resorting to
 0 responsible for
 0 making liberal use of the but construction
 1 appealed
 1 quite supportive
 0 rejected
-0 about cold blood accomplices to murder , because that is what these al qa'ida disciples at guantanamo bay are
+0 about cold - blood accomplices to murder , because that is what these al - qa'ida disciples at guantanamo bay are
 0 can not integrate itself
 0 a revolving door
 1 support
@@ -7580,7 +7580,7 @@
 0 not be condoned by
 0 torture
 0 all but dismissed
-0 not in the self interests
+0 not in the self - interests
 1 approval
 0 a terrific example of how to violate international laws and human rights
 0 had been accused
@@ -7596,7 +7596,7 @@
 1 can at best
 0 criticizing
 0 warm peace , not a cold peace
-1 could be to steer soaring space station costs back toward earth
+1 could be to steer soaring space - station costs back toward earth
 0 getting mixed up with crime , drugs , and violence
 1 thanked
 1 enjoy freedom , dignity , and independence
@@ -7660,7 +7660,7 @@
 1 very pleasant for
 1 invited
 0 almost all parts of the globe
-1 cost effective
+1 cost - effective
 0 the world has heated up a notch
 0 frigid
 1 urged
@@ -7677,10 +7677,10 @@
 1 were honest
 1 go into the streets en masse and defend and support
 0 was naive
-0 bush 's axis of evil rhetoric
+0 bush's axis of evil rhetoric
 0 enormous
 0 as good as decided
-1 major force of anti terrorism
+1 major force of anti - terrorism
 0 now requires action rather than mere lip service
 1 very robustly
 0 unnecessary restraint ,
@@ -7702,7 +7702,7 @@
 0 the guilt or otherwise
 0 tragic
 1 the support of
-0 had not met sadc 's norms and standards
+0 had not met sadc's norms and standards
 1 plan
 1 fair
 0 disavowed
@@ -7734,7 +7734,7 @@
 1 reflect the firm resolve
 1 from upholding religious and cultural values
 0 spew
-0 war on terror
+0 war on terror .
 0 policy of isolation and stifling
 0 exploiting
 0 is obviously afoot
@@ -7744,7 +7744,7 @@
 0 even risking his own future
 0 has expressed concern
 1 has written the name of moscow on the registration page of the american side
-0 were characterised by among others intimidation
+0 were characterised by - - among others - - intimidation
 0 angry
 0 factual inaccuracies
 1 insists
@@ -7754,9 +7754,9 @@
 1 is promising
 0 no country
 0 not useful
-0 they 're a pain in the ass
+0 they're a pain in the ass
 0 crush us at all costs
-1 is unequivocal in its u s support
+1 is unequivocal in its u . s . support
 1 has reached a consensus
 1 advises
 0 encouragement
@@ -7783,7 +7783,7 @@
 0 declined
 0 see the world in terms of good and evil states
 0 prohibition
-0 would cause japan and the republic of korea \( rok \) feel disturbed
+0 would cause japan and the republic of korea ( rok ) feel disturbed
 0 a desire to approve
 1 will
 0 opposed
@@ -7803,10 +7803,10 @@
 0 feels constrained to reject
 0 alleged rigging
 0 decided
-0 more muted and often self satisfied
+0 more muted and often self - satisfied
 0 troublemaker
 1 more attentive
-0 increase the palestinians' suffering and encourage the israeli right wing stands
+0 increase the palestinians' suffering and encourage the israeli right - wing stands
 0 to think
 0 very likely
 1 adopt concrete measures to stop the conflict
@@ -7820,7 +7820,7 @@
 1 fortunately
 0 outside the law
 1 was successful
-0 israel 's atrocities
+0 israel's atrocities
 0 severely reduces
 0 is getting little sympathy
 0 constitute a breeding ground for bilateral tensions
@@ -7902,8 +7902,8 @@
 0 purposely play up
 0 however
 1 cheering
-0 lose the right to count itself among the world 's democracies
-0 it 's very disappointing
+0 lose the right to count itself among the world's democracies
+0 it's very disappointing
 0 rigged
 1 would not be a bad idea
 0 a bad decision
@@ -7922,14 +7922,14 @@
 0 expressing discontent
 0 continues to indefinitely refuse
 1 as friends or not evil
-0 the radical wing of anti castro exiles
+0 the radical wing of anti - castro exiles
 1 asking for
 0 axis of evil
 0 axis of evil
 0 rejection of
 1 with much intensity
 1 sanctity of
-0 goat f
+0 goat f - -
 0 been subjected to abusive language
 0 like the case of that pot who called the kettle black
 0 requests , through a bulletin
@@ -7938,7 +7938,7 @@
 0 are not satisfied with
 1 prefer
 0 simply because
-0 uncalled for
+0 uncalled - for
 1 will
 0 provocative
 0 rejects
@@ -7966,7 +7966,7 @@
 0 no more than an improved carbon copy
 0 could n't care less
 1 as patients
-0 the modern , 21st century version of the stars and stripes
+0 the modern , 21st - century version of the stars and stripes
 0 systematic campaign of violence
 1 good will
 1 want
@@ -8042,7 +8042,7 @@
 0 abandoned
 1 ideology was explicitly embraced
 0 will consult with no one
-0 no tears for tobin , but some for al qaeda
+0 no tears for tobin , but some for al - qaeda
 1 proudly announced
 0 only served to deny
 0 threatening
@@ -8058,7 +8058,7 @@
 0 pretext
 0 prevents
 0 just about every shady tactic in the book
-0 pose a threat to indonesia 's national sovereignty
+0 pose a threat to indonesia's national sovereignty
 0 the great money laundering operation
 0 injured scores
 1 elevates its image in international society
@@ -8066,7 +8066,7 @@
 1 support for
 0 laden with threats
 0 had relentlessly demonstrated
-0 so called
+0 so - called
 0 outrage
 0 such an
 0 not inclined to give way to rapture
@@ -8099,7 +8099,7 @@
 0 could accept
 0 accused
 0 demeaned
-0 showed little disguised irritation
+0 showed little - disguised irritation
 0 dictation from the us
 0 would not solve the problem
 0 devastating
@@ -8109,7 +8109,7 @@
 0 scores of nations
 0 victorious
 1 hope
-0 faltered as a result of israel 's intransigence
+0 faltered as a result of israel's intransigence
 0 axis of evil
 0 war crimes or bloody massacres
 0 no to negotiations
@@ -8134,7 +8134,7 @@
 1 just and acceptable political framework
 0 cling obstinately
 1 urged
-0 would be nothing without the chic and prestige conferred by elite u s universities
+0 would be nothing without the chic and prestige conferred by elite u . s . universities
 0 hindered
 0 mix up
 0 rebelled
@@ -8176,7 +8176,7 @@
 1 thanked
 0 the major enemy
 1 failed
-1 for the benefit and well being of future generations all over the planet
+1 for the benefit and well - being of future generations all over the planet
 0 villains
 1 join hands
 0 thousands
@@ -8225,7 +8225,7 @@
 0 were seething
 0 slow
 0 the ford falcon syndrome
-1 would not only serve zinni 's mission
+1 would not only serve zinni's mission
 0 only create mistrust
 0 depriving them of the basic human rights , in contravention of its own constitution
 0 reproached
@@ -8258,7 +8258,7 @@
 0 are irritated
 1 imperialists are weakening and aspirations to independence are strengthening
 0 defy
-0 that 's what happened in argentina
+0 that's what happened in argentina
 1 the interests of
 0 rejecting
 0 getting strong criticism , denunciation , and rejection
@@ -8276,7 +8276,7 @@
 1 endorsed
 0 further expressed alarm
 1 interests
-0 functional anti us entity
+0 functional anti - us entity
 0 engulfed by violence and crime
 1 is interested
 1 first step
@@ -8284,7 +8284,7 @@
 0 claimed
 0 disagree
 1 protection
-0 this is the final nail on the government 's coffin
+0 this is the final nail on the government's coffin
 0 axis of evil
 0 always
 1 recognize
@@ -8301,7 +8301,7 @@
 0 chavez had to go
 1 supported
 0 making fun of
-0 as if the crowd and people 's nerves were already not enough to heat up the atmosphere
+0 as if the crowd and people's nerves were already not enough to heat up the atmosphere
 0 even more difficult
 0 has been sounding the alarm
 0 cracking down
@@ -8341,7 +8341,7 @@
 0 would be difficult because
 1 support
 1 most promising
-1 most cost effective
+1 most cost - effective
 1 at the request
 0 have a sense that they have been cheated
 0 have been accused
@@ -8360,7 +8360,7 @@
 0 cages
 1 still wants
 1 wished
-0 a chorus of euro whiners
+0 a chorus of euro - whiners
 0 impossible
 1 support of
 0 is a simple prejudice
@@ -8391,7 +8391,7 @@
 0 aggressively harping
 0 blamed
 0 was angered
-0 indulging in blood shed and their lunaticism
+0 indulging in blood - shed and their lunaticism
 0 worse criticism and rejection
 0 have given proof of illegality and political persecution
 0 has already done several things
@@ -8406,7 +8406,7 @@
 1 urged
 0 are tired
 0 perpetuate
-0 right wing
+0 right - wing
 0 be concerned
 0 another setback for the imf
 0 denunciation and rejection
@@ -8422,7 +8422,7 @@
 1 reiterated
 0 astonished
 1 urge
-0 u s domination
+0 u . s . domination
 0 unrealistic
 0 dramatic
 1 entirely successful
@@ -8459,12 +8459,12 @@
 0 the failure to discuss
 0 claimed
 1 a success
-1 the civilized world
+1 the civilized world .
 0 parliamentarian
 0 to teach everyone , the british first
 0 irresponsible
 0 no longer quite ready to follow
-0 concluded in its scathing 70 , 000 word report
+0 concluded in its scathing 70 , 000 - word report
 1 praised
 0 all the worse
 0 the protest
@@ -8483,7 +8483,7 @@
 0 of all places
 0 sensory deprivation
 0 condemned
-0 non negotiable
+0 non - negotiable
 0 utter boredom
 0 an attack
 0 has been roundly condemned
@@ -8515,7 +8515,7 @@
 1 heroic
 0 did not show the slightest sympathy , still less the least regret
 0 one of the greatest problems
-0 abandon its one sidedness
+0 abandon its one - sidedness
 0 no confidence
 0 are to blame
 0 take a turn for the worse
@@ -8541,14 +8541,14 @@
 0 that makes them about as dangerous as a person can be in modern times
 0 went the length of staging the farce
 0 a storm of protest
-0 so called great satan
+0 so - called great satan
 0 israel is a spoiled brat of the united states
 0 running my ass off chasing you guys around
 1 through peaceful means
 0 pained him
 0 do not recognise
 0 charges of
-1 to the healthy development of sino us relations
+1 to the healthy development of sino - us relations
 0 burden sharing
 1 support
 0 criminalise
@@ -8556,7 +8556,7 @@
 0 fear
 0 it is certainly playing games
 0 his brother , jeb , needs in order to secure his reelection
-0 camp x ray
+0 camp x - ray
 0 charges brought
 0 refusal
 0 excuses
@@ -8572,12 +8572,12 @@
 0 follow suit
 0 concerning their life or death
 0 dirty money
-0 had been tainted by months of political violence and intimidation , last minute changes to electoral laws , and the disenfranchisement of tens of thousands of voters in harare
-0 rock throwing youths responded
+0 had been tainted by months of political violence and intimidation , last - minute changes to electoral laws , and the disenfranchisement of tens of thousands of voters in harare
+0 rock - throwing youths responded
 1 has pursued
 0 in spite of the good offices
 1 can not prevent
-0 like hitler 's threats
+0 like hitler's threats
 0 insulting
 1 to approve
 1 appreciating

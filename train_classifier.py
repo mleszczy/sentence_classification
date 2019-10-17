@@ -16,6 +16,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.autograd import Variable
+from pytorch_pretrained_bert import BertTokenizer, BertModel
 
 # import cuda_functional as MF
 sys.path.append(os.path.dirname(__file__))
@@ -31,6 +32,7 @@ class Model(nn.Module):
     def __init__(self, args, emb_layer, nclasses=2):
         super(Model, self).__init__()
         self.args = args
+
         self.drop = nn.Dropout(args.dropout)
         self.emb_layer = emb_layer
         if args.cnn:
@@ -51,10 +53,23 @@ class Model(nn.Module):
             d_out = emb_layer.n_d
         self.out = nn.Linear(d_out, nclasses)
 
-    def forward(self, input):
-        if self.args.cnn:
-            input = input.t()
-        emb = self.emb_layer(input)
+    def forward(self, raw_x):
+        if self.args.use_bert_embeddings:
+            assert type(raw_x) is tuple
+            x,mask = raw_x
+            print('model.forward (not bert): x.shape = {}'.format(x.shape))
+            emb = self.emb_layer(x,mask)
+            if self.args.cnn:
+                print('model.forward (not bert): emb.shape (before permute) = {}'.format(emb.shape))
+                emb.permute(1,0,2) # is this correct?
+            print('model.forward (not bert): emb.shape = {}'.format(emb.shape))
+        else:
+            x = raw_x
+            print('model.forward (not bert): x.shape = {}'.format(x.shape))
+            if self.args.cnn:
+                x = x.t()
+            emb = self.emb_layer(x)
+            print('model.forward (not bert): emb.shape = {}'.format(emb.shape))
         if not self.args.la:
             emb = self.drop(emb)
         if self.args.cnn:
@@ -78,7 +93,6 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     preds = []
     probs = []
     for x, y in zip(valid_x, valid_y):
-        x, y = Variable(x, volatile=True), Variable(y)
         output = model(x)
         loss = criterion(output, y)
         if torch.__version__ >= '0.4':
@@ -125,7 +139,6 @@ def train_model(epoch, model, optimizer,
         niter += 1
         cnt += 1
         model.zero_grad()
-        x, y = Variable(x), Variable(y)
         output = model(x)
         loss = criterion(output, y)
         loss.backward()
@@ -161,31 +174,38 @@ def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
 
 def main(args):
     train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset)
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model_name) if args.use_bert_embeddings else None
+    train_x, valid_x, test_x = (dataloader.tokenize(train_x, args.dataset, tokenizer),
+                                dataloader.tokenize(valid_x, args.dataset, tokenizer),
+                                dataloader.tokenize(test_x, args.dataset, tokenizer))
     data = train_x + valid_x + test_x
 
-    if args.embedding:
-        logging.info("Using single embedding file.")
-        emb_layer = modules.EmbeddingLayer(
-            args.d, data,
-            embs = dataloader.load_embedding(args.embedding),
-            normalize=not args.no_normalize
-        )
-    elif args.embedding_list:
-        logging.info("Using embedding list.")
-        embedding_list = []
-        with open(args.embedding_list, 'r') as f:
-            lines = f.readlines()
-            assert len(lines) >= args.cycles
-            for i, emb in enumerate(lines):
-                logging.info("Embedding file: {embfile}".format(embfile=emb.strip()))
-                embedding_list.append(modules.EmbeddingLayer(
-                                    args.d, data,
-                                    embs = dataloader.load_embedding(emb.strip()),
-                                    normalize=not args.no_normalize).cuda())
-        emb_layer = embedding_list[0]
-        print("Embedding list length", len(embedding_list))
+    if not args.use_bert_embeddings:
+        if args.embedding:
+            logging.info("Using single embedding file.")
+            emb_layer = modules.EmbeddingLayer(
+                args.d, data,
+                embs = dataloader.load_embedding(args.embedding),
+                normalize=not args.no_normalize
+            )
+        elif args.embedding_list:
+            logging.info("Using embedding list.")
+            embedding_list = []
+            with open(args.embedding_list, 'r') as f:
+                lines = f.readlines()
+                assert len(lines) >= args.cycles
+                for i, emb in enumerate(lines):
+                    logging.info("Embedding file: {embfile}".format(embfile=emb.strip()))
+                    embedding_list.append(modules.EmbeddingLayer(
+                                        args.d, data,
+                                        embs = dataloader.load_embedding(emb.strip()),
+                                        normalize=not args.no_normalize).cuda())
+            emb_layer = embedding_list[0]
+            print("Embedding list length", len(embedding_list))
+        else:
+            raise ValueError("Need to provide embedding or list of embeddings.")
     else:
-        raise ValueError("Need to provide embedding or list of embeddings.")
+        emb_layer = modules.BertEmbeddingLayer(bert_model_name=args.bert_model_name, tokenizer=tokenizer)
 
     orig_emb_layer = emb_layer
 
@@ -196,22 +216,22 @@ def main(args):
         train_x, train_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = 'sst' in args.dataset
-        # sort = args.dataset == 'sst'
+        sort='sst' in args.dataset,
+        tokenizer=tokenizer
     )
     valid_x, valid_y = dataloader.create_batches(
         valid_x, valid_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = 'sst' in args.dataset
-        # sort = args.dataset == 'sst'
+        sort='sst' in args.dataset,
+        tokenizer=tokenizer
     )
     test_x, test_y = dataloader.create_batches(
         test_x, test_y,
         args.batch_size,
         emb_layer.word2id,
-        sort = 'sst' in args.dataset
-        # sort = args.dataset == 'sst'
+        sort = 'sst' in args.dataset,
+        tokenizer=tokenizer
     )
 
     if args.load_mdl is None:
@@ -345,6 +365,9 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--embedding_list", type=str, help="List of word vector files")
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
+    argparser.add_argument("--use_bert_embeddings", action="store_true",
+                           help="Use last hidden layer activations of pre-trained BERT model as embeddings")
+    argparser.add_argument("--bert_model_name", type=str, default='bert-base-cased', help="Name of pre-trained BERT model")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)

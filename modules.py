@@ -1,10 +1,9 @@
+import logging
 import sys
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
-import logging
+from pytorch_pretrained_bert import BertTokenizer, BertModel
 
 def deep_iter(x):
     if isinstance(x, list) or isinstance(x, tuple):
@@ -31,6 +30,22 @@ class CNN_Text(nn.Module):
         x = torch.cat(x, 1)
         return x
 
+class BertEmbeddingLayer(nn.Module):
+    def __init__(self, bert_model_name='bert-base-cased', tokenizer=None):
+        super(BertEmbeddingLayer, self).__init__()
+        self.tokenizer = tokenizer if tokenizer else BertTokenizer.from_pretrained(bert_model_name)
+        self.model = BertModel.from_pretrained(bert_model_name)
+        self.model.eval()
+        self.n_d = 768 # dimension of BERT contextual embeddings (output of last hidden layer)
+
+    def forward(self, input_ids, input_masks):
+        with self.model.no_grad():
+            all_encoder_layers, _ = self.model(input_ids, token_type_ids=None, attention_mask=input_masks)
+            print('BertEmbeddingLayer: all_encoder_layers.shape = {}'.format(all_encoder_layers.shape))
+            # get last hidden layer
+            embeddings =  all_encoder_layers[-1].detach()
+            print('BertEmbeddingLayer: embeddings.shape = {}'.format(embeddings.shape))
+        return embeddings
 
 class EmbeddingLayer(nn.Module):
     def __init__(self, n_d, words, embs=None, fix_emb=True, oov='<oov>', pad='<pad>', normalize=True):
