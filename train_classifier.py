@@ -179,7 +179,6 @@ def main(args):
                                 dataloader.tokenize(valid_x, args.dataset, tokenizer),
                                 dataloader.tokenize(test_x, args.dataset, tokenizer))
     data = train_x + valid_x + test_x
-
     if not args.use_bert_embeddings:
         if args.embedding:
             logging.info("Using single embedding file.")
@@ -212,24 +211,25 @@ def main(args):
     nclasses = max(train_y)+1
     logging.info(str(nclasses) + " classes in total")
 
+    word2id = None if args.use_bert_embeddings else emb_layer.word2id
     train_x, train_y = dataloader.create_batches(
         train_x, train_y,
         args.batch_size,
-        emb_layer.word2id,
+        word2id,
         sort='sst' in args.dataset,
         tokenizer=tokenizer
     )
     valid_x, valid_y = dataloader.create_batches(
         valid_x, valid_y,
         args.batch_size,
-        emb_layer.word2id,
+        word2id,
         sort='sst' in args.dataset,
         tokenizer=tokenizer
     )
     test_x, test_y = dataloader.create_batches(
         test_x, test_y,
         args.batch_size,
-        emb_layer.word2id,
+        word2id,
         sort = 'sst' in args.dataset,
         tokenizer=tokenizer
     )
