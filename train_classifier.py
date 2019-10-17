@@ -93,8 +93,6 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
             preds += pred.cpu().numpy().tolist()
             probs += output.data.cpu().numpy().tolist()
 
-
-    print("Past no grad")
     if pred_file is not None:
         with open(pred_file, 'wb') as outfile:
             pickle.dump(preds, outfile)
@@ -166,7 +164,6 @@ def main(args):
     train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset, pretrainfraction=args.pretrainfraction)
     data = train_x + valid_x + test_x
 
-    print("back in main of train_classifier.py to continue training")
     if args.embedding:
         logging.info("Using single embedding file.")
         emb_layer = modules.EmbeddingLayer(
@@ -187,12 +184,11 @@ def main(args):
                                     embs = dataloader.load_embedding(emb.strip()),
                                     normalize=not args.no_normalize).cuda())
         emb_layer = embedding_list[0]
-        print("Embedding list length", len(embedding_list))
     else:
         raise ValueError("Need to provide embedding or list of embeddings.")
 
     orig_emb_layer = emb_layer
-
+    
     nclasses = max(train_y)+1
     logging.info(str(nclasses) + " classes in total")
 
@@ -350,6 +346,7 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--tag", type=str, help="Tag for naming files")
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
     argparser.add_argument("--pretrainfraction", type=float, default=1.0, help="Train with the specified fraction of training data")
+    argparser.add_argument("--num_kernels", type=int, default=100, help="vary the model strength, change the number of kernels")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)

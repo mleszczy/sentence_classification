@@ -207,14 +207,14 @@ def read_split_dataset(data_dir, dataset, pretrainfraction: float = 1.0):
         dataset_path = os.path.join(data_dir, filename)
         # no need to clean, because we already did this before writing the files.
         data_list[i], label_list[i] = read_dataset(dataset_path, clean=False)
-    print("list[0]: "  + str(len(data_list[0])) + " list[1]: " +  str(len(data_list[1])) + " list[2]: " + str(len(data_list[2])))
+    
     x_train = []
     y_train = []
     if pretrainfraction != 1.0:
         x_train, y_train = downsample(data_list[0], label_list[0], pretrainfraction)
     else:
         x_train = data_list[0]
-        y_train = data_list[0]
+        y_train = label_list[0]
     return x_train, y_train, data_list[1], label_list[1],data_list[2], label_list[2]
 
 def sample(length, pretrainfraction: float = 1.0):
@@ -235,15 +235,11 @@ def downsample(x_list, y_list, pretrainfraction = 1.0):
         for i in random_values
     ]
     
-    print("Downsampled train set to size: " + str(len(x_list_down)))
-
     # keep the stopping conditions the same as before
     int_multiple = int(1.0/pretrainfraction)
     x_list_down = x_list_down*int_multiple
     y_list_down = y_list_down*int_multiple
 
-    print("Final x_list_down size is: " + str(len(x_list_down)))
-    
     return x_list_down, y_list_down
 
 
