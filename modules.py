@@ -33,7 +33,8 @@ class CNN_Text(nn.Module):
 class BertEmbeddingLayer(nn.Module):
     def __init__(self, bert_model_name='bert-base-cased', tokenizer=None):
         super(BertEmbeddingLayer, self).__init__()
-        self.tokenizer = tokenizer if tokenizer else BertTokenizer.from_pretrained(bert_model_name, do_lower_case=False)
+        self.tokenizer = (tokenizer if tokenizer else
+                          BertTokenizer.from_pretrained(bert_model_name, do_lower_case='uncased' in bert_model_name))
         self.model = BertModel.from_pretrained(bert_model_name)
         self.model.eval()
         self.n_d = 768 # dimension of BERT contextual embeddings (output of last hidden layer)
