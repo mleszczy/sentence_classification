@@ -33,18 +33,22 @@ class CNN_Text(nn.Module):
 class BertEmbeddingLayer(nn.Module):
     def __init__(self, bert_model_name='bert-base-cased', tokenizer=None):
         super(BertEmbeddingLayer, self).__init__()
-        self.tokenizer = tokenizer if tokenizer else BertTokenizer.from_pretrained(bert_model_name)
+        self.tokenizer = tokenizer if tokenizer else BertTokenizer.from_pretrained(bert_model_name, do_lower_case=False)
         self.model = BertModel.from_pretrained(bert_model_name)
         self.model.eval()
         self.n_d = 768 # dimension of BERT contextual embeddings (output of last hidden layer)
 
     def forward(self, input_ids, input_masks):
         with torch.no_grad():
+            # input_ids and input_masks are LongTensors of dimensions (# sentences) x (# tokens).
+            # all_encoder layers is (# layers) x (# sentences) x (# tokens) x (embedding dim),
+            # where the two first dimensions (layers, sentences) are nested lists. List[List[FloatTensor]].
             all_encoder_layers, _ = self.model(input_ids, token_type_ids=None, attention_mask=input_masks)
-            print('BertEmbeddingLayer: all_encoder_layers.shape = {}'.format(all_encoder_layers.shape))
-            # get last hidden layer
+            print('BertEmbeddingLayer: len(all_encoder_layers) = {}'.format(len(all_encoder_layers)))
+            # get last hidden layer, and detach it from computation graph (no backprop into BERT embeddings).
             embeddings =  all_encoder_layers[-1].detach()
-            print('BertEmbeddingLayer: embeddings.shape = {}'.format(embeddings.shape))
+            print('BertEmbeddingLayer: len(embeddings) = {}'.format(len(embeddings)))
+            print('BertEmbeddingLayer: embeddings[0].shape = {}'.format(embeddings[0].shape))
         return embeddings
 
 class EmbeddingLayer(nn.Module):
