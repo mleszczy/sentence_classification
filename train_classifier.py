@@ -33,12 +33,15 @@ class Model(nn.Module):
         self.args = args
         self.drop = nn.Dropout(args.dropout)
         self.emb_layer = emb_layer
+        kernel_sizes = [3,4,5]
         if args.cnn:
             self.encoder = modules.CNN_Text(
                 emb_layer.n_d,
-                widths = [3,4,5]
+                widths = kernel_sizes,
+                filters = args.num_kernels
             )
-            d_out = 300
+            #related to default, hard coded values; [3,4,5] x 100 num_kernels = 300
+            #d_out = 300
         elif args.lstm:
             self.encoder = nn.LSTM(
                 emb_layer.n_d,
@@ -49,7 +52,7 @@ class Model(nn.Module):
             d_out = args.d
         elif args.la:
             d_out = emb_layer.n_d
-        self.out = nn.Linear(d_out, nclasses)
+        self.out = nn.Linear(len(kernel_sizes)*args.num_kernels, nclasses)
 
     def forward(self, input):
         if self.args.cnn:
@@ -66,6 +69,7 @@ class Model(nn.Module):
             output = emb.sum(dim=0) / emb.size()[0]
         if not self.args.la:
             output = self.drop(output)
+
         return self.out(output)
 
 def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
