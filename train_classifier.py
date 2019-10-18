@@ -57,15 +57,11 @@ class Model(nn.Module):
         # when use_bert_embeddings=True,  x = (input_ids, masks), where both are LongTensors of dim (# tokens) x (# sentences)
         # when use_bert_embeddings=False, x = input_ids, which is a LongTensor of dim (# tokens) x (# sentences)
         input_ids,masks = x if self.args.use_bert_embeddings else (x,None)
-        print('model.forward: input_ids.shape = {}'.format(input_ids.shape))
         # emb is (# sentences) x (# tokens) X (embedding dim)
         emb = self.emb_layer(input_ids.t(), masks.t()) if self.args.use_bert_embeddings else self.emb_layer(input_ids.t())
         if not self.args.cnn:
             # input to non-CNN models should be (# tokens) x (# sentences) x (embedding dimension)
-            print('model.forward: emb.shape (before permute) = {}'.format(emb.shape))
             emb = emb.permute(1,0,2)
-        print('model.forward: emb.shape = {}'.format(emb.shape))
-        sys.exit()
         if not self.args.la:
             emb = self.drop(emb)
         if self.args.cnn:

@@ -45,11 +45,12 @@ class BertEmbeddingLayer(nn.Module):
             # all_encoder layers is (# layers) x (# sentences) x (# tokens) x (embedding dim),
             # where the two first dimensions (layers, sentences) are nested lists. List[List[FloatTensor]].
             all_encoder_layers, _ = self.model(input_ids, token_type_ids=None, attention_mask=input_masks)
-            print('BertEmbeddingLayer: len(all_encoder_layers) = {}'.format(len(all_encoder_layers)))
             # get last hidden layer, and detach it from computation graph (no backprop into BERT embeddings).
             embeddings =  all_encoder_layers[-1].detach()
-            print('BertEmbeddingLayer: len(embeddings) = {}'.format(len(embeddings)))
-            print('BertEmbeddingLayer: embeddings[0].shape = {}'.format(embeddings[0].shape))
+            # FOR DEBUGGING
+            # print('BertEmbeddingLayer: len(all_encoder_layers) = {}'.format(len(all_encoder_layers)))
+            # print('BertEmbeddingLayer: len(embeddings) = {}'.format(len(embeddings)))
+            # print('BertEmbeddingLayer: embeddings[0].shape = {}'.format(embeddings[0].shape))
         return embeddings
 
 class EmbeddingLayer(nn.Module):
