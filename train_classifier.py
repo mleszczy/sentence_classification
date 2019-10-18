@@ -170,7 +170,7 @@ def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
 
 def main(args):
     train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset)
-    tokenizer = BertTokenizer.from_pretrained(args.bert_model_name) if args.use_bert_embeddings else None
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model_name, do_lower_case=False) if args.use_bert_embeddings else None
     train_x, valid_x, test_x = (dataloader.tokenize(train_x, args.dataset, tokenizer),
                                 dataloader.tokenize(valid_x, args.dataset, tokenizer),
                                 dataloader.tokenize(test_x, args.dataset, tokenizer))
