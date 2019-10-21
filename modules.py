@@ -43,14 +43,13 @@ class BertEmbeddingLayer(nn.Module):
         with torch.no_grad():
             # input_ids and input_masks are LongTensors of dimensions (# sentences) x (# tokens).
             # all_encoder layers is (# layers) x (# sentences) x (# tokens) x (embedding dim),
-            # where the two first dimensions (layers, sentences) are nested lists. List[List[FloatTensor]].
+            # where the first dimension (layers) is a list. List[FloatTensor].
             all_encoder_layers, _ = self.model(input_ids, token_type_ids=None, attention_mask=input_masks)
             # get last hidden layer, and detach it from computation graph (no backprop into BERT embeddings).
             embeddings =  all_encoder_layers[-1].detach()
             # FOR DEBUGGING
             # print('BertEmbeddingLayer: len(all_encoder_layers) = {}'.format(len(all_encoder_layers)))
-            # print('BertEmbeddingLayer: len(embeddings) = {}'.format(len(embeddings)))
-            # print('BertEmbeddingLayer: embeddings[0].shape = {}'.format(embeddings[0].shape))
+            # print('BertEmbeddingLayer: embeddings.shape = {}'.format(embeddings.shape))
         return embeddings
 
 class EmbeddingLayer(nn.Module):
