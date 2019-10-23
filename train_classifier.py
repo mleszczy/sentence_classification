@@ -84,13 +84,15 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     total_loss = 0.0
     preds = []
     probs = []
+    use_bert = type(valid_x[0]) is tuple
     for x, y in zip(valid_x, valid_y):
         output = model(x)
         loss = criterion(output, y)
+        batch_size = x[0].size(1) if use_bert else x.size(1)
         if torch.__version__ >= '0.4':
-            total_loss += loss.data*x.size(1)
+            total_loss += loss.data * batch_size
         else:
-            total_loss += loss.data[0]*x.size(1)
+            total_loss += loss.data[0] * batch_size
         pred = output.data.max(1)[1]
         correct += pred.eq(y.data).cpu().sum()
         cnt += y.numel()
