@@ -19,7 +19,7 @@ def pad(sequences, pad_token='<pad>', pad_left=True):
     return [ seq + [pad_token]*(max_len-len(seq)) for seq in sequences ]
 
 def get_token_ids_and_masks(tokenized_sentences, tokenizer):
-    max_sentence_length = len(max(tokenized_sentences, key=len))
+    max_sentence_length = max(5,max(len(tokenized_sentence) for tokenized_sentence in tokenized_sentences))
     input_ids = []
     input_masks = []
     for sentence in tokenized_sentences:
@@ -54,14 +54,17 @@ def create_one_batch(x, y, map2id, oov='<oov>', tokenizer=None):
 def tokenize(sentences, dataset, tokenizer):
     tokenized_sentences = []
     for sentence in sentences:
+        clean_sentence = clean_str(sentence, dataset)
+        words = clean_sentence.split()
         if tokenizer:
             tokens = []
             tokens.append('[CLS]')
-            tokens.extend(tokenizer.tokenize(sentence))
+            for word in words:
+                tokens.extend(tokenizer.tokenize(word))
             tokens.append('[SEP]')
+            assert len(tokens) - 2 >= len(words)
         else:
-            text = clean_str(sentence, dataset)
-            tokens = text.split()
+            tokens = words
         tokenized_sentences.append(tokens)
     return tokenized_sentences
 
