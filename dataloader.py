@@ -47,7 +47,7 @@ def create_one_batch(x, y, map2id, oov='<oov>', tokenizer=None):
         length = len(x[0])
         batch_size = len(x)
         x = [ map2id.get(w, oov_id) for seq in x for w in seq ]
-        x = torch.LongTensor(x)
+        x = torch.LongTensor(x).cuda()
         assert x.size(0) == length*batch_size
         return x.view(batch_size, length).t().contiguous().cuda(), torch.LongTensor(y).cuda()
 

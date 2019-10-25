@@ -40,6 +40,7 @@ class BertEmbeddingLayer(nn.Module):
         self.n_d = 768 # dimension of BERT contextual embeddings (output of last hidden layer)
 
     def forward(self, input_ids, input_masks):
+        print("helo!")
         with torch.no_grad():
             # input_ids and input_masks are LongTensors of dimensions (# sentences) x (# tokens).
             # all_encoder layers is (# layers) x (# sentences) x (# tokens) x (embedding dim),
@@ -47,7 +48,18 @@ class BertEmbeddingLayer(nn.Module):
             all_encoder_layers, _ = self.model(input_ids, token_type_ids=None, attention_mask=input_masks)
             # get last hidden layer, and detach it from computation graph (no backprop into BERT embeddings).
             embeddings =  all_encoder_layers[-1].detach()
-            # FOR DEBUGGING
+
+            for i in range(len(input_masks) - 1):
+                for j in range(len(input_masks[i])-1):
+                    if input_masks[i][j] == 0:
+                        logging.info("input_masks[{}][{}] is {}".format(i, j, input_masks[i][j]))
+                    if input_masks[i][j] == 0:
+                        logging.info(embeddings[i][j])
+            logging.info("DONE!")
+
+
+            logging.info('Average BERT embedding squared norm: {}'.format(torch.sum(embeddings**2).item() / torch.sum(input_masks).item()))
+
             # print('BertEmbeddingLayer: len(all_encoder_layers) = {}'.format(len(all_encoder_layers)))
             # print('BertEmbeddingLayer: embeddings.shape = {}'.format(embeddings.shape))
         return embeddings
@@ -93,12 +105,37 @@ class EmbeddingLayer(nn.Module):
             weight.data[:len(embwords)].copy_(torch.from_numpy(embvecs))
             logging.info("embedding shape: {}".format(weight.size()))
 
+        sum_norms = 0
+        count_norms = 0
+        for row in self.embedding.weight.split(1):
+            norm = torch.norm(row)
+            sum_norms = sum_norms + norm
+            count_norms = count_norms + 1
+        avg_norm = sum_norms/count_norms
+        logging.info("BEFORE NORMALIZING, GLOVE AVG_NORM IS: {}".format(str(avg_norm)))
+        logging.info("{} BERT SIZE".format(self.embedding.weight.size()))
+            
         if normalize:
             weight = self.embedding.weight
             norms = weight.data.norm(2,1)
             if norms.dim() == 1:
                 norms = norms.unsqueeze(1)
             weight.data.div_(norms.expand_as(weight.data))
+ 
+
+        sum_norms = 0
+        count_norms = 0
+        for row in self.embedding.weight.split(1):
+            norm = torch.norm(row)
+            sum_norms = sum_norms + norm
+            count_norms = count_norms + 1
+        avg_norm = sum_norms/count_norms
+        logging.info("AFTER NORMALIZING, GLOVE AVG_NORM IS: {}".format(str(avg_norm)))
+       
+        #sample = torch.narrow(self.embedding.weight, 1, 0, 32)
+        #sample_norm = torch.norm(sample)
+        #print("after norm is: " + str(sample_norm))
+        #print("after norm size: " + str(self.embedding.weight.size()))
 
         if fix_emb:
             self.embedding.weight.requires_grad = False

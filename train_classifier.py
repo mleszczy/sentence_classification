@@ -51,14 +51,14 @@ class Model(nn.Module):
             d_out = args.d
         elif args.la:
             d_out = emb_layer.n_d
-        self.out = nn.Linear(d_out, nclasses)
+        self.out = nn.Linear(d_out, nclasses).cuda()
 
     def forward(self, x):
         # when use_bert_embeddings=True,  x = (input_ids, masks), where both are LongTensors of dim (# tokens) x (# sentences)
         # when use_bert_embeddings=False, x = input_ids, which is a LongTensor of dim (# tokens) x (# sentences)
         input_ids,masks = x if self.args.use_bert_embeddings else (x,None)
         # emb is (# sentences) x (# tokens) X (embedding dim)
-        emb = self.emb_layer(input_ids.t(), masks.t()) if self.args.use_bert_embeddings else self.emb_layer(input_ids.t())
+        emb = self.emb_layer(input_ids.t(), masks.t()).cuda() if self.args.use_bert_embeddings else self.emb_layer(input_ids.t()).cuda()
         if not self.args.cnn:
             # input to non-CNN models should be (# tokens) x (# sentences) x (embedding dimension)
             emb = emb.permute(1,0,2)
@@ -109,7 +109,7 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
          with open(prob_file, 'wb') as outfile:
             pickle.dump(probs, outfile)
 
-    model.train()
+    model.train().cuda()
     if torch.__version__ >= '0.4':
         return 1.0-float(correct)/float(cnt)
     else:
@@ -127,7 +127,7 @@ def train_model(epoch, model, optimizer,
     args = model.args
     N = len(train_x)
     niter = epoch*len(train_x)
-    criterion = nn.CrossEntropyLoss()
+    criterion = nn.CrossEntropyLoss().cuda()
 
     cnt = 0
     for x, y in zip(train_x, train_y):
@@ -385,6 +385,10 @@ def train_sentiment(cmdline_args):
     # Set random seed for torch
     torch.manual_seed(args.model_seed)
     torch.cuda.manual_seed(args.model_seed)
+    if torch.cuda.is_available():
+        torch.backends.cudnn.enabled = True
+        torch.backends.cudnn.deterministic=True     
+
 
     # Set random seed for numpy
     np.random.seed(seed=args.model_seed)
