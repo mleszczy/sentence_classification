@@ -35,12 +35,15 @@ class Model(nn.Module):
 
         self.drop = nn.Dropout(args.dropout)
         self.emb_layer = emb_layer
+        kernel_sizes = [3,4,5]
         if args.cnn:
             self.encoder = modules.CNN_Text(
                 emb_layer.n_d,
-                widths = [3,4,5]
+                widths = kernel_sizes,
+                filters = args.num_kernels
             )
-            d_out = 300
+            #related to default, hard coded values; [3,4,5] x 100 num_kernels = 300
+            #d_out = 300
         elif args.lstm:
             self.encoder = nn.LSTM(
                 emb_layer.n_d,
@@ -51,7 +54,7 @@ class Model(nn.Module):
             d_out = args.d
         elif args.la:
             d_out = emb_layer.n_d
-        self.out = nn.Linear(d_out, nclasses)
+        self.out = nn.Linear(len(kernel_sizes)*args.num_kernels, nclasses)
 
     def forward(self, x):
         # when use_bert_embeddings=True,  x = (input_ids, masks), where both are LongTensors of dim (# tokens) x (# sentences)
@@ -73,6 +76,7 @@ class Model(nn.Module):
             output = emb.sum(dim=0) / emb.size()[0]
         if not self.args.la:
             output = self.drop(output)
+
         return self.out(output)
 
 def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
@@ -85,21 +89,22 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     preds = []
     probs = []
     use_bert = type(valid_x[0]) is tuple
-    for x, y in zip(valid_x, valid_y):
-        output = model(x)
-        loss = criterion(output, y)
-        batch_size = y.numel()
-        assert batch_size == (x[0].size(1) if use_bert else x.size(1))
-        if torch.__version__ >= '0.4':
-            total_loss += loss.data * batch_size
-        else:
-            total_loss += loss.data[0] * batch_size
-        pred = output.data.max(1)[1]
-        correct += pred.eq(y.data).cpu().sum()
-        cnt += batch_size
+    with torch.no_grad():
+        for x, y in zip(valid_x, valid_y):
+            output = model(x)
+            loss = criterion(output, y)
+            batch_size = y.numel()
+            assert batch_size == (x[0].size(1) if use_bert else x.size(1))
+            if torch.__version__ >= '0.4':
+                total_loss += loss.data * batch_size
+            else:
+                total_loss += loss.data[0] * batch_size
+            pred = output.data.max(1)[1]
+            correct += pred.eq(y.data).cpu().sum()
+            cnt += batch_size
 
-        preds += pred.cpu().numpy().tolist()
-        probs += output.data.cpu().numpy().tolist()
+            preds += pred.cpu().numpy().tolist()
+            probs += output.data.cpu().numpy().tolist()
 
     if pred_file is not None:
         with open(pred_file, 'wb') as outfile:
@@ -168,7 +173,7 @@ def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
     return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
 
 def main(args):
-    train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset)
+    train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset, trainfraction=args.trainfraction)
     tokenizer = (BertTokenizer.from_pretrained(args.bert_model_name, do_lower_case='uncased' in args.bert_model_name)
                 if args.use_bert_embeddings
                 else None)
@@ -197,14 +202,14 @@ def main(args):
                                         embs = dataloader.load_embedding(emb.strip()),
                                         normalize=not args.no_normalize).cuda())
             emb_layer = embedding_list[0]
-            print("Embedding list length", len(embedding_list))
+            logging.info('Embedding list length: {}'.format(len(embedding_list)))
         else:
             raise ValueError("Need to provide embedding or list of embeddings.")
     else:
         emb_layer = modules.BertEmbeddingLayer(bert_model_name=args.bert_model_name, tokenizer=tokenizer)
 
     orig_emb_layer = emb_layer
-
+    
     nclasses = max(train_y)+1
     logging.info(str(nclasses) + " classes in total")
 
@@ -365,6 +370,8 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--use_bert_embeddings", action="store_true",
                            help="Use last hidden layer activations of pre-trained BERT model as embeddings")
     argparser.add_argument("--bert_model_name", type=str, default='bert-base-cased', help="Name of pre-trained BERT model")
+    argparser.add_argument("--trainfraction", type=float, default=1.0, help="Train with the specified fraction of training data")
+    argparser.add_argument("--num_kernels", type=int, default=100, help="vary the model strength, change the number of kernels")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)

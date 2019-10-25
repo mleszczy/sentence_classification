@@ -244,7 +244,7 @@ def write_dataset(path, data, labels):
         for i in range(len(data)):
             f.write('{} {}\n'.format(labels[i], data[i]))
 
-def read_split_dataset(data_dir, dataset):
+def read_split_dataset(data_dir, dataset, trainfraction=1.0):
     data_split_strs = ['train','heldout','test']
     data_list = [0]*3
     label_list = [0]*3
@@ -252,7 +252,41 @@ def read_split_dataset(data_dir, dataset):
         filename = '{}.{}.txt'.format(dataset, data_split_strs[i])
         dataset_path = os.path.join(data_dir, filename)
         data_list[i], label_list[i] = read_dataset(dataset_path, dataset)
-    return data_list[0], label_list[0], data_list[1], label_list[1],data_list[2], label_list[2]
+    
+    x_train = []
+    y_train = []
+    if trainfraction < 1.0:
+        x_train, y_train = downsample(data_list[0], label_list[0], trainfraction)
+    else:
+        x_train = data_list[0]
+        y_train = label_list[0]
+    return x_train, y_train, data_list[1], label_list[1], data_list[2], label_list[2]
+
+def sample(length, trainfraction):
+    import random
+    sample_size = round(length * trainfraction)
+    sample = random.sample(range(1, length), sample_size)
+    return sample
+
+def downsample(x_list, y_list, trainfraction):
+    import math
+    assert trainfraction < 1 and trainfraction > 0, 'Should only call downsample with trainfraction between 0 and 1'
+    total_train_examples = len(x_list)
+    random_indices = sample(total_train_examples, trainfraction)
+    x_list_downsampled = [
+        x_list[i]
+        for i in random_indices
+    ]
+    y_list_downsampled = [
+        y_list[i]
+        for i in random_indices
+    ]
+    # Use multiple copies of downsampled data to keep total amount of training data the same.
+    # This code support trainfractions such that 1/trainfraction is not an integer.
+    int_multiple = math.ceil(1.0/trainfraction)
+    x_list_downsampled = (x_list_downsampled * int_multiple)[:total_train_examples]
+    y_list_downsampled = (y_list_downsampled * int_multiple)[:total_train_examples]
+    return x_list_downsampled, y_list_downsampled
 
 def write_split_dataset(data_dir, train_x, train_y, valid_x, valid_y, test_x, test_y):
     data_split_strs = ['train','heldout','test']
