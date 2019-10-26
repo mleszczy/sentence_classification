@@ -369,7 +369,7 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--no_cudnn", action="store_true", help="Turn off cuDNN for deterministic CNN")
     argparser.add_argument("--use_bert_embeddings", action="store_true",
                            help="Use last hidden layer activations of pre-trained BERT model as embeddings")
-    argparser.add_argument("--bert_model_name", type=str, default='bert-base-cased', help="Name of pre-trained BERT model")
+    argparser.add_argument("--bert_model_name", type=str, default='bert-base-uncased', help="Name of pre-trained BERT model")
     argparser.add_argument("--trainfraction", type=float, default=1.0, help="Train with the specified fraction of training data")
     argparser.add_argument("--num_kernels", type=int, default=100, help="vary the model strength, change the number of kernels")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")

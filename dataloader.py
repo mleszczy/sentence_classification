@@ -148,13 +148,13 @@ def load_embedding(path, word_dict=None):
     else:
         return load_embedding_txt(path, word_dict)
 
-def clean_str(string, dataset):
+def clean_str(string, dataset, ignore_dataset=True):
     """
     Tokenization/string cleaning for all datasets except for SST.
     Every dataset is lower cased except for TREC
     """
     string = string.strip()
-    if 'sst' in dataset:
+    if 'sst' in dataset and not ignore_dataset:
         return string
     else:
         string = re.sub(r"[^A-Za-z0-9(),!?\'\`]", " ", string)
@@ -170,7 +170,7 @@ def clean_str(string, dataset):
         string = re.sub(r"\)", " \) ", string)
         string = re.sub(r"\?", " \? ", string)
         string = re.sub(r"\s{2,}", " ", string)
-        return string.strip() if (dataset=='trec') else string.strip().lower()
+        return string.strip() if (dataset=='trec' and not ignore_dataset) else string.strip().lower()
 
 def split_and_save_dataset(dataset, input_data_dir, output_data_dir):
     train_x, train_y, valid_x, valid_y, test_x, test_y = split_dataset(dataset, input_data_dir)
