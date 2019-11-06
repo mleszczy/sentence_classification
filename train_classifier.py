@@ -264,10 +264,17 @@ def main(args):
     else: # enables deprecated use of naming
         tag = args.tag
 
-    # pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
-    # prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
-    pred_file = None
-    prob_file = None
+
+    if args.out:
+        pred_file = os.path.join(args.out, "{tag}.pred".format(tag=tag))
+        prob_file = os.path.join(args.out, "{tag}.prob".format(tag=tag))
+        if not os.path.exists(args.out):
+            os.makedirs(args.out)
+    else:
+        pred_file = None
+        prob_file = None
+    #print("PRED FILE: " + str(pred_file))
+    #print("PROB FILE: " + str(prob_file))
 
     # Normal training
     if not args.snapshot:

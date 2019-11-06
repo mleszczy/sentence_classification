@@ -184,8 +184,19 @@ def split_dataset(dataset, data_dir):
         'sst':['stsa.binary.phrases.train','stsa.binary.dev','stsa.binary.test'],
         'sst1':['stsa.fine.phrases.train','stsa.fine.dev','stsa.fine.test'],
         'trec':['TREC.train.all','TREC.test.all'],
-        'mpqa':'mpqa.all'
+        'mpqa':'mpqa.all',
+       
+        #augmented sets
+        'mr_alpha,0.1':'rt-polarity.all',
+        'subj_alpha,0.1':'subj.all',
+        'cr_alpha,0.1':'custrev.all',
+        'mpqa_alpha,0.1':'mpqa.all',
+        'mr_alpha,0.2':'rt-polarity.all',
+        'subj_alpha,0.2':'subj.all',
+        'cr_alpha,0.2':'custrev.all',
+        'mpqa_alpha,0,2':'mpqa.all',
     }
+
     if dataset == 'sst' or dataset == 'sst1':
         dataset_paths = [os.path.join(data_dir, filenames[dataset][i]) for i in range(3)]
         train_x, train_y = read_dataset(dataset_paths[0], dataset)
@@ -197,7 +208,9 @@ def split_dataset(dataset, data_dir):
             train_valid_x, train_valid_y = read_dataset(dataset_paths[0], dataset)
             test_x, test_y = read_dataset(dataset_paths[1], dataset)
         else:
-            assert dataset in ['mr','subj','cr','mpqa']
+            original_datasets = ['mr','subj','cr','mpqa']
+            augmented_datasets = ['mr_alpha,0.1', 'mr_alpha,0.2', 'cr_alpha,0.1', 'cr_alpha,0.2', 'subj_alpha,0.1', 'subj_alpha,0.2', 'mpqa_alpha,0.1', 'mpqa_alpha,0.2']
+            assert dataset in original_datasets + augmented_datasets
             dataset_path = os.path.join(data_dir, filenames[dataset])
             data, labels = read_dataset(dataset_path, dataset)
             train_valid_x, train_valid_y, test_x, test_y = random_split(data, labels)
@@ -251,8 +264,18 @@ def read_split_dataset(data_dir, dataset, trainfraction=1.0):
     data_split_strs = ['train','heldout','test']
     data_list = [0]*3
     label_list = [0]*3
+    base = ""
+    original_datasets = ['mr', 'cr', 'mpqa', 'subj', 'sst', 'trec']
+    for dset in original_datasets:
+        if dset in dataset:
+            base = dset
+    assert base != ""
     for i in range(len(data_split_strs)):
-        filename = '{}.{}.txt'.format(dataset, data_split_strs[i])
+        if i > 0:
+            filename = '{}.{}.txt'.format(base, data_split_strs[i])
+            print("FILENAME: " + str(filename))
+        else:
+            filename = '{}.{}.txt'.format(dataset, data_split_strs[i])
         dataset_path = os.path.join(data_dir, filename)
         data_list[i], label_list[i] = read_dataset(dataset_path, dataset)
     
