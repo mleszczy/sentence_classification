@@ -195,6 +195,14 @@ def split_dataset(dataset, data_dir):
         'subj_alpha,0.2':'subj.all',
         'cr_alpha,0.2':'custrev.all',
         'mpqa_alpha,0,2':'mpqa.all',
+
+        #gpt2 datasets
+        'transformerlm_gentext_dataset,cr_4x': 'custrev.all',
+        'transformerlm_gentext_dataset,mpqa_4x': 'mpqa.all',
+        'transformerlm_gentext_dataset,mr_4x': 'rt-polarity.all',
+        'transformerlm_gentext_dataset,sst_4x': ['stsa.binary.phrases.train','stsa.binary.dev','stsa.binary.test'],
+        'transformerlm_gentext_dataset,subj_4x': 'subj.all',
+        'transformerlm_gentext_dataset,trec_4x': ['TREC.train.all','TREC.test.all']
     }
 
     if dataset == 'sst' or dataset == 'sst1':
@@ -210,7 +218,8 @@ def split_dataset(dataset, data_dir):
         else:
             original_datasets = ['mr','subj','cr','mpqa']
             augmented_datasets = ['mr_alpha,0.1', 'mr_alpha,0.2', 'cr_alpha,0.1', 'cr_alpha,0.2', 'subj_alpha,0.1', 'subj_alpha,0.2', 'mpqa_alpha,0.1', 'mpqa_alpha,0.2']
-            assert dataset in original_datasets + augmented_datasets
+            gpt2_datasets = ['transformerlm_gentext_dataset,cr_4x', 'transformerlm_gentext_dataset,mpqa_4x', 'transformerlm_gentext_dataset,mr_4x', 'transformerlm_gentext_dataset,sst_4x', 'transformerlm_gentext_dataset,subj_4x', 'transformerlm_gentext_dataset,trec_4x']
+            assert dataset in original_datasets + augmented_datasets + gpt2_datasets
             dataset_path = os.path.join(data_dir, filenames[dataset])
             data, labels = read_dataset(dataset_path, dataset)
             train_valid_x, train_valid_y, test_x, test_y = random_split(data, labels)
