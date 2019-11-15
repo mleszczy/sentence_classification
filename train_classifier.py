@@ -138,7 +138,7 @@ def loss_kd(student_outputs, labels, teacher_outputs, args):
     # "T is a temperature that is normally set to 1. Using a higher value for T produces a softer 
     # probability distribution over classes." (Distilling the Knowledge in a NN by Hinton, Vinyals, Dean, 2015)
     T = 1 
-   
+      
     #TODO: loss function based on L2 loss
 
     #TODO: loss function based on cross entropy loss
