@@ -120,6 +120,35 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     else:
         return 1.0-correct/cnt
 
+# save teacher logits to be used in knowledge distillation
+def get_teacher_logits(model, valid_x, valid_y):
+    model.eval()
+    criterion = nn.CrossEntropyLoss()
+    logits = []
+    with torch.no_grad():
+        for x, y in zip(valid_x, valid_y):
+            output = model(x).data.cpu().numpy()
+            logits.append(output)
+    return logits
+
+# loss function to be used during knowledge distillation (kd)
+def loss_kd(student_outputs, labels, teacher_outputs, args):
+    alpha = args.teacher_alpha
+    
+    # "T is a temperature that is normally set to 1. Using a higher value for T produces a softer 
+    # probability distribution over classes." (Distilling the Knowledge in a NN by Hinton, Vinyals, Dean, 2015)
+    T = 1 
+   
+    #TODO: loss function based on L2 loss
+
+    #TODO: loss function based on cross entropy loss
+    
+    # one loss function I found online ...
+    loss_kd = nn.KLDivLoss()(F.log_softmax(student_outputs/T, dim=1),
+                             F.softmax(teacher_outputs/T, dim=1)) * (alpha * T * T) + \
+              F.cross_entropy(student_outputs, labels) * (1. - alpha)
+
+    return loss_kd
 
 def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
@@ -127,22 +156,34 @@ def train_model(epoch, model, optimizer,
         best_valid, test_err,
         save_mdl=None,
         pred_file=None,
-        prob_file=None):
+        prob_file=None, 
+        teacher_logits=None):
     model.train()
     args = model.args
     N = len(train_x)
     niter = epoch*len(train_x)
     criterion = nn.CrossEntropyLoss()
-
     cnt = 0
     for x, y in zip(train_x, train_y):
-        niter += 1
-        cnt += 1
+       
+        # get student batch
         model.zero_grad()
         output = model(x)
-        loss = criterion(output, y)
-        loss.backward()
-        optimizer.step()
+        
+        if teacher_logits:
+            # get one batch from the teacher_outputs list if knowledge distillation
+            teacher_output = torch.from_numpy(teacher_logits[cnt])
+            teacher_output = teacher_output.cuda()
+            teacher_output.requires_grad = False
+            loss = loss_kd(output, y, teacher_output, args)
+            loss.backward()
+            optimizer.step()
+         else:
+            loss = criterion(output, y)
+            loss.backward()
+            optimizer.step()
+        niter += 1
+        cnt += 1
 
     valid_err = eval_model(model, valid_x, valid_y)
 
@@ -165,9 +206,11 @@ def train_model(epoch, model, optimizer,
         best_valid = valid_err
         test_err = eval_model(model, test_x, test_y, pred_file=pred_file, prob_file=prob_file)
         # Save model
+        # During a knowledge distillation pass, this saves a techer model (Simran)
         if save_mdl is not None:
             torch.save(model, save_mdl)
     return best_valid, test_err
+
 
 def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
     return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
@@ -235,13 +278,17 @@ def main(args):
         sort = 'sst' in args.dataset,
         tokenizer=tokenizer
     )
-
+  
+    teacher_model = None
+    if args.distill == "student":
+        teacher_model = torch.load(args.load_teacher_mdl).cuda()
+  
     if args.load_mdl is None:
         model = Model(args, emb_layer, nclasses).cuda()
     else:
         # Note: this will overwrite all parameters
         model = torch.load(args.load_mdl).cuda()
-
+  
     need_grad = lambda x: x.requires_grad
     optimizer = optim.Adam(
         filter(need_grad, model.parameters()),
@@ -278,6 +325,12 @@ def main(args):
 
     # Normal training
     if not args.snapshot:
+        logits = []
+        if args.distill != "student":
+            logits = None
+        elif args.distill == "student":
+            logits = get_teacher_logits(teacher_model, valid_x, valid_y)
+
         for epoch in range(args.max_epoch):
             best_valid, test_err = train_model(epoch, model, optimizer,
                 train_x, train_y,
@@ -286,7 +339,8 @@ def main(args):
                 best_valid, test_err,
                 save_mdl=args.save_mdl,
                 pred_file=pred_file,
-                prob_file=prob_file
+                prob_file=prob_file,
+                teacher_logits=logits,
             )
             if args.lr_decay>0:
                 optimizer.param_groups[0]['lr'] *= args.lr_decay
@@ -379,6 +433,9 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--bert_model_name", type=str, default='bert-base-uncased', help="Name of pre-trained BERT model")
     argparser.add_argument("--trainfraction", type=float, default=1.0, help="Train with the specified fraction of training data")
     argparser.add_argument("--num_kernels", type=int, default=100, help="vary the model strength, change the number of kernels")
+    argparser.add_argument("--distill", type=str, default="", help="does this pass involve knowledge distillation?")
+    argparser.add_argument("--load_teacher_mdl", type=str, default=None, help="Load teacher model from this file.")
+    argparser.add_argument("--teacher_alpha", type=int, default=0, help="Amount to weight teacher model during training")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)
@@ -395,6 +452,18 @@ def train_sentiment(cmdline_args):
     if args.no_cudnn:
         torch.backends.cudnn.enabled = False
         logging.info("CuDNN Disabled!!!")
+   
+    # Knowledge distillation checks 
+    if args.distill == 'student':
+        assert len(load_teacher_mdl) != 0
+        assert len(save_mdl) == 0
+    elif args.distill == 'teacher':
+        assert len(load_teacher_mdl) == 0
+        assert len(save_mdl) != 0
+    else:
+        assert len(args.distill) == 0
+        assert len(load_teacher_mdl) == 0
+        assert len(save_mdl) == 0
 
     # Set random seed for torch
     torch.manual_seed(args.model_seed)
