@@ -56,12 +56,20 @@ class Model(nn.Module):
             d_out = emb_layer.n_d
         self.out = nn.Linear(len(kernel_sizes)*args.num_kernels, nclasses)
 
-    def forward(self, x):
+    def forward(self, x, is_student=False):
         # when use_bert_embeddings=True,  x = (input_ids, masks), where both are LongTensors of dim (# tokens) x (# sentences)
         # when use_bert_embeddings=False, x = input_ids, which is a LongTensor of dim (# tokens) x (# sentences)
-        input_ids,masks = x if self.args.use_bert_embeddings else (x,None)
+        teacher = self.args.teacher_alpha > 0 and self.args.teacher_path
+        bert = self.args.use_bert_embeddings
+        student = is_student
+        unpacker = bert or (teacher and not student)
+        #print("BERT: " + str(bert))
+        #print("TEACHER: " + str(teacher))
+        #print("STUDENT: " + str(student))
+        #print("UNPACKER: " + str(unpacker))
+        input_ids,masks = x if unpacker else (x,None)
         # emb is (# sentences) x (# tokens) X (embedding dim)
-        emb = self.emb_layer(input_ids.t(), masks.t()) if self.args.use_bert_embeddings else self.emb_layer(input_ids.t())
+        emb = self.emb_layer(input_ids.t(), masks.t()) if unpacker else self.emb_layer(input_ids.t())
         if not self.args.cnn:
             # input to non-CNN models should be (# tokens) x (# sentences) x (embedding dimension)
             emb = emb.permute(1,0,2)
@@ -91,7 +99,7 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     use_bert = type(valid_x[0]) is tuple
     with torch.no_grad():
         for x, y in zip(valid_x, valid_y):
-            output = model(x)
+            output = model(x, is_student=True)
             loss = criterion(output, y)
             batch_size = y.numel()
             assert batch_size == (x[0].size(1) if use_bert else x.size(1))
@@ -121,20 +129,46 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
         return 1.0-correct/cnt
 
 # gather teacher logits to be used in student-teacher training.
-def get_teacher_logits(teacher_model, valid_x):
+def get_teacher_logits(teacher_model, args):
+    logging.info("reloading data")
+    train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset, trainfraction=args.trainfraction)
+    tokenizer = BertTokenizer.from_pretrained(args.bert_model_name, do_lower_case='uncased' in args.bert_model_name)
+    train_x = dataloader.tokenize(train_x, args.dataset, tokenizer)
+
+    logging.info("setting up BERT embedding layer")
+    emb_layer = modules.BertEmbeddingLayer(bert_model_name=args.bert_model_name, tokenizer=tokenizer)
+    word2id = None 
+
+    train_x, train_y = dataloader.create_batches(
+        train_x, train_y,
+        args.batch_size,
+        word2id,
+        sort='sst' in args.dataset,
+        tokenizer=tokenizer
+    )
+    logging.info("reloaded train_x")
+
+    logging.info("in get_teacher_logits")
     teacher_model.eval()
     logits = []
     with torch.no_grad():
-        for x in valid_x:
-            output = teacher_model(x).data
+        for x in train_x:
+            output = teacher_model(x, is_student=False).data
             output.requires_grad = False
             logits.append(output)
+    logging.info("LOGITS LENGTH: " + str(len(logits)))
     return logits
 
 # loss function to be used during student-teacher training.
 def student_teacher_loss(student_outputs, labels, teacher_outputs, alpha):
     assert alpha >= 0 and alpha <= 1
-    return (1. - alpha) * F.cross_entropy(student_outputs, labels) + alpha * F.mse_loss(student_outputs, teacher_outputs)
+    T = 1
+    logging.info("student_teacher_loss")
+    KD_loss = nn.KLDivLoss()(F.log_softmax(student_outputs/T, dim=1),
+                             F.softmax(teacher_outputs/T, dim=1)) * (alpha * T * T) + \
+              F.cross_entropy(student_outputs, labels) * (1. - alpha)
+    #return (1. - alpha) * F.cross_entropy(student_outputs, labels) + alpha * F.mse_loss(student_outputs, teacher_outputs)
+    return KD_loss
 
 def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
@@ -145,17 +179,21 @@ def train_model(epoch, model, optimizer,
         prob_file=None, 
         teacher_logits=None,
         teacher_alpha=0):
+    #logging.info("in train model")
     model.train()
     N = len(train_x)
     niter = epoch*len(train_x)
     do_student_teacher_training = teacher_logits and teacher_alpha > 0
+    logging.info("DO_STUDENT_TEACHER_TRAINING: " + str(do_student_teacher_training))
     criterion = student_teacher_loss if do_student_teacher_training else nn.CrossEntropyLoss()
     batch_num = 0
     for x, y in zip(train_x, train_y):
         model.zero_grad()
-        output = model(x)
+        output = model(x, is_student=True)
         if do_student_teacher_training:
+            #logging.info("BATCH NUM: " + str(batch_num))
             teacher_output = teacher_logits[batch_num]
+            # save the outputs here for the augmented datasets BERT!
             loss = criterion(output, y, teacher_output, teacher_alpha)
         else:
             loss = criterion(output, y)
@@ -164,6 +202,7 @@ def train_model(epoch, model, optimizer,
         niter += 1
         batch_num += 1
 
+    #logging.info("past epoch, now calculating val err")
     valid_err = eval_model(model, valid_x, valid_y)
 
     if torch.__version__ >= "0.4":
@@ -202,6 +241,7 @@ def main(args):
                                 dataloader.tokenize(valid_x, args.dataset, tokenizer),
                                 dataloader.tokenize(test_x, args.dataset, tokenizer))
     data = train_x + valid_x + test_x
+
     if not args.use_bert_embeddings:
         if args.embedding:
             logging.info("Using single embedding file.")
@@ -299,9 +339,10 @@ def main(args):
 
     # Normal training
     if not args.snapshot:
-        teacher_logits = (get_teacher_logits(torch.load(args.teacher_path).cuda(), valid_x)
+        teacher_logits = (get_teacher_logits(torch.load(args.teacher_path).cuda(), args)
                           if args.teacher_path and args.teacher_alpha > 0
                           else None)
+        logging.info("in main, about to start epochs")
         for epoch in range(args.max_epoch):
             best_valid, test_err = train_model(epoch, model, optimizer,
                 train_x, train_y,
@@ -406,10 +447,13 @@ def train_sentiment(cmdline_args):
     argparser.add_argument("--trainfraction", type=float, default=1.0, help="Train with the specified fraction of training data")
     argparser.add_argument("--num_kernels", type=int, default=100, help="vary the model strength, change the number of kernels")
     argparser.add_argument("--teacher_path", type=str, default=None, help="Load teacher model from this file.")
-    argparser.add_argument("--teacher_alpha", type=int, default=0, help="Amount to weight teacher model during training")
+    argparser.add_argument("--teacher_alpha", type=float, default=0, help="Amount to weight teacher model during training")
     # argparser.add_argument("--no_cv", action="store_true", help="Merge train and validation dataset.")
     print(cmdline_args)
     args = argparser.parse_args(cmdline_args)
+
+    logging.info("teacher_path: " + str(args.teacher_path))
+    logging.info("teacher_alpha: " + str(args.teacher_alpha))
 
     # Dump git hash
     # h = check_output(['git', 'rev-parse', '--short', 'HEAD']).strip()
