@@ -69,24 +69,31 @@ def tokenize(sentences, dataset, tokenizer):
     return tokenized_sentences
 
 # shuffle training examples and create mini-batches
-def create_batches(x, y, batch_size, map2id, perm=None, sort=False, tokenizer=None):
+def create_batches(x, y, batch_size, map2id, perm=None, sort=False, tokenizer=None, write=False, out=""):
     lst = perm or range(len(x))
 
     # sort sequences based on their length; necessary for SST
     if sort:
         lst = sorted(lst, key=lambda i: len(x[i]))
+        
         logging.info("minibatches are length sorted")
 
+    # lst index to orig index
+    map_len = {}
+    
     x = [ x[i] for i in lst ]
     y = [ y[i] for i in lst ]
+    ind = [ i for i in lst ] 
 
     sum_len = 0.0
     batches_x = [ ]
     batches_y = [ ]
+    order = {}
     size = batch_size
     nbatch = (len(x)-1) // size + 1
     for i in range(nbatch):
         bx, by = create_one_batch(x[i*size:(i+1)*size], y[i*size:(i+1)*size], map2id, tokenizer=tokenizer)
+        order[i] = ind[i*size:(i+1)*size]
         sum_len += len(by)
         batches_x.append(bx)
         batches_y.append(by)
@@ -96,6 +103,13 @@ def create_batches(x, y, batch_size, map2id, perm=None, sort=False, tokenizer=No
         random.shuffle(perm)
         batches_x = [ batches_x[i] for i in perm ]
         batches_y = [ batches_y[i] for i in perm ]
+        
+        if write:
+            filename = out + "_raw"
+            with open(filename, 'w') as f:
+                for batch_i in perm:
+                    for j in order[batch_i]:
+                        f.write(str(j) + "\n")
 
     logging.info("{} batches, avg len: {:.1f}".format(
         nbatch, sum_len/nbatch

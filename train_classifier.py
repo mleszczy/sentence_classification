@@ -79,7 +79,7 @@ class Model(nn.Module):
 
         return self.out(output)
 
-def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
+def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None, output_file=False, best_valid=-1):
     model.eval()
     N = len(valid_x)
     criterion = nn.CrossEntropyLoss()
@@ -88,6 +88,8 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
     total_loss = 0.0
     preds = []
     probs = []
+    data = []
+    true = []
     use_bert = type(valid_x[0]) is tuple
     with torch.no_grad():
         for x, y in zip(valid_x, valid_y):
@@ -104,22 +106,28 @@ def eval_model(model, valid_x, valid_y, pred_file=None, prob_file=None):
             cnt += batch_size
 
             preds += pred.cpu().numpy().tolist()
+            print(x)
+            data.append(x)
+            print(y)
+            true.append(y)
             probs += output.data.cpu().numpy().tolist()
 
-    if pred_file is not None:
-        with open(pred_file, 'wb') as outfile:
-            pickle.dump(preds, outfile)
-
-    if prob_file is not None:
-         with open(prob_file, 'wb') as outfile:
-            pickle.dump(probs, outfile)
-
+    valid_err = -1
     model.train()
     if torch.__version__ >= '0.4':
-        return 1.0-float(correct)/float(cnt)
+        valid_err =  1.0-float(correct)/float(cnt)
     else:
-        return 1.0-correct/cnt
+        valid_err =  1.0-correct/cnt
+    
+    if valid_err < best_valid:
+        if pred_file is not None:
+            with open(pred_file, 'wb') as outfile:
+                pickle.dump(preds, outfile)
 
+        if prob_file is not None:
+            with open(prob_file, 'wb') as outfile:
+                pickle.dump(probs, outfile)
+    return valid_err
 
 def train_model(epoch, model, optimizer,
         train_x, train_y, valid_x, valid_y,
@@ -144,7 +152,7 @@ def train_model(epoch, model, optimizer,
         loss.backward()
         optimizer.step()
 
-    valid_err = eval_model(model, valid_x, valid_y)
+    valid_err = eval_model(model, valid_x, valid_y, pred_file=pred_file, prob_file=prob_file, output_file=True, best_valid=best_valid)
 
     if torch.__version__ >= "0.4":
         logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
@@ -163,7 +171,7 @@ def train_model(epoch, model, optimizer,
 
     if valid_err < best_valid:
         best_valid = valid_err
-        test_err = eval_model(model, test_x, test_y, pred_file=pred_file, prob_file=prob_file)
+        test_err = eval_model(model, test_x, test_y) #, pred_file=pred_file, prob_file=prob_file)
         # Save model
         if save_mdl is not None:
             torch.save(model, save_mdl)
@@ -226,7 +234,9 @@ def main(args):
         args.batch_size,
         word2id,
         sort='sst' in args.dataset,
-        tokenizer=tokenizer
+        tokenizer=tokenizer,
+        write=True,
+        out=args.out
     )
     test_x, test_y = dataloader.create_batches(
         test_x, test_y,
