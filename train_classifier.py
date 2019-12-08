@@ -151,11 +151,31 @@ def get_teacher_logits(teacher_model, args):
     logging.info("in get_teacher_logits")
     teacher_model.eval()
     logits = []
+    #with torch.no_grad():
+    #    for x in train_x:
+    #        output = teacher_model(x, is_student=False).data
+    #        output.requires_grad = False
+    #        logits.append(output)
+
+    preds = []
+    use_bert = type(train_x[0]) is tuple
     with torch.no_grad():
-        for x in train_x:
-            output = teacher_model(x, is_student=False).data
-            output.requires_grad = False
-            logits.append(output)
+        for x, y in zip(train_x, train_y):
+            output = teacher_model(x, is_student=False)
+            pred = output.data.max(1)[1]
+            preds += pred.cpu().numpy().tolist()
+    
+    logging.info("saving preds")
+    tag = "dataset,{}_lr,{}".format(args.dataset, args.lr)
+    out = '/proj/smallfry/embeddings/augment/12_05_19_dev/'
+    pred_file = os.path.join(out, "{tag}.pred".format(tag=tag))
+    if not os.path.exists(out):
+        os.makedirs(out)
+
+    if pred_file is not None:
+        with open(pred_file, 'wb') as outfile:
+            pickle.dump(preds, outfile)
+
     logging.info("LOGITS LENGTH: " + str(len(logits)))
     return logits
 
@@ -203,7 +223,8 @@ def train_model(epoch, model, optimizer,
         batch_num += 1
 
     #logging.info("past epoch, now calculating val err")
-    valid_err = eval_model(model, valid_x, valid_y)
+    
+    valid_err = eval_model(model, valid_x, valid_y, pred_file=pred_file, prob_file=prob_file)
 
     if torch.__version__ >= "0.4":
         logging.info("Epoch={} iter={} lr={:.6f} train_loss={:.6f} valid_err={:.6f}".format(
@@ -222,7 +243,7 @@ def train_model(epoch, model, optimizer,
 
     if valid_err < best_valid:
         best_valid = valid_err
-        test_err = eval_model(model, test_x, test_y, pred_file=pred_file, prob_file=prob_file)
+        test_err = eval_model(model, test_x, test_y) # , pred_file=pred_file, prob_file=prob_file)
         # Save model
         if save_mdl is not None:
             torch.save(model, save_mdl)
@@ -231,6 +252,16 @@ def train_model(epoch, model, optimizer,
 
 def cyclic_lr(initial_lr, iteration, epoch_per_cycle):
     return initial_lr * (math.cos(math.pi * iteration / epoch_per_cycle) + 1) / 2
+
+
+def save_labels(args):
+    best_valid = 1e+8
+    test_err = 1e+8
+
+    teacher_logits = (get_teacher_logits(torch.load(args.teacher_path).cuda(), args)
+                          if args.teacher_path and args.teacher_alpha > 0
+                          else None)
+    return best_valid, test_err   
 
 def main(args):
     train_x, train_y, valid_x, valid_y, test_x, test_y = dataloader.read_split_dataset(args.path, args.dataset, trainfraction=args.trainfraction)
@@ -480,4 +511,7 @@ def train_sentiment(cmdline_args):
     logging.info("CMD: python " +  " ".join(sys.argv))
     print_key_pairs(args.__dict__.items(), title="Command Line Args", print_function=logging.info)
     # print (args)
+     
+    #return save_labels(args)
     return main(args)
+    
